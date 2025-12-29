@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-black text-slate-900 antialiased selection:bg-red-500/30 selection:text-red-900;
+
+    /* Cinematic Red Light Leaks Background */
+    background-color: #000000;
+    background-image:
+      /* Large soft red glow from top right */
+      radial-gradient(circle at 80% 0%, rgba(185, 28, 28, 0.4) 0%, transparent 50%),
+      /* Subtle red streak bottom left */
+      radial-gradient(circle at 0% 100%, rgba(153, 27, 27, 0.3) 0%, transparent 40%),
+      /* Faint ambient red center */
+      radial-gradient(circle at 50% 50%, rgba(127, 29, 29, 0.1) 0%, transparent 60%);
+
+    background-attachment: fixed;
+    background-size: cover;
+  }
+}
+
+@layer utilities {
+  .glass {
+    /* Sharp White Layout Elements */
+    @apply bg-white border border-gray-200 shadow-xl;
+    /* Strict Sharp Corners */
+    border-radius: 0px !important;
+  }
+
+  .glass-card {
+    /* Sharp White Cards */
+    @apply bg-white border border-gray-200 shadow-md hover:-translate-y-1 transition-all duration-300;
+    /* Strict Sharp Corners */
+    border-radius: 0px !important;
+  }
+
+  /* Universal Sharp Corners Override */
+  * {
+    border-radius: 0px !important;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
