@@ -96,7 +96,7 @@ const Feed = () => {
                     onClick={handlePostClick}
                     className="bg-white text-black px-6 py-3 font-bold hover:bg-slate-200 transition-colors shadow-lg"
                 >
-                    + Post Opinion
+                    + Ask/Post Opinion
                 </button>
             </div>
 
