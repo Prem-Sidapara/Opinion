@@ -104,8 +104,11 @@ router.post('/register', async (req, res) => {
 
     try {
         // Check existing
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
+        let user = await User.findOne({ email });
+
+        // If user exists AND has a password, block them (User already exists)
+        // If user exists but NO password (OTP acc), we update them!
+        if (user && user.password) {
             return res.status(400).json({ message: 'User already exists.' });
         }
 
@@ -113,13 +116,20 @@ router.post('/register', async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const user = new User({
-            email,
-            password: hashedPassword,
-            username: username || email.split('@')[0],
-        });
-
-        await user.save();
+        if (user) {
+            // MERGE/CONVERT ACCOUNT: existing OTP user -> Password user
+            user.password = hashedPassword;
+            user.username = username || user.username; // Update username if provided
+            await user.save();
+        } else {
+            // NEW USER
+            user = new User({
+                email,
+                password: hashedPassword,
+                username: username || email.split('@')[0],
+            });
+            await user.save();
+        }
 
         // Generate Token
         const token = jwt.sign({ userId: user._id, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
