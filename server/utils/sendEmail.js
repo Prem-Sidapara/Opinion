@@ -1,4 +1,3 @@
-```javascript
 const SibApiV3Sdk = require('sib-api-v3-sdk');
 
 const sendEmail = async (to, subject, text) => {
@@ -13,31 +12,28 @@ const sendEmail = async (to, subject, text) => {
             const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
             sendSmtpEmail.subject = subject;
-            sendSmtpEmail.htmlContent = `< html > <body><p>${text.replace(/\n/g, "<br>")}</p></body></html > `;
+            sendSmtpEmail.htmlContent = `<html><body><p>${text.replace(/\n/g, "<br>")}</p></body></html>`;
             sendSmtpEmail.sender = { "name": "Opinions App", "email": process.env.EMAIL_USER || "no-reply@opinions.com" };
             sendSmtpEmail.to = [{ "email": to }];
 
             await apiInstance.sendTransacEmail(sendSmtpEmail);
-            console.log(`📧 Email sent to ${ to } via Brevo`);
+            console.log(`📧 Email sent to ${to} via Brevo`);
             return true;
         } catch (error) {
             console.error('Brevo API failed:', error);
-            // Don't fallback to console if user explicitly asked not to show logs
-            // But we must return false so UI knows it failed
             return false;
         }
     }
-    
+
     // 2. Fallback: Log to console ONLY if no key is configured (Local Dev)
     if (!process.env.BREVO_API_KEY) {
         console.log('---------------------------------------------------');
-        console.log(`⚠️  EMAIL FALLBACK(No API Key)`);
-        console.log(`📨 To: ${ to } `);
-        console.log(`TEXT BODY: ${ text } `);
+        console.log(`⚠️  EMAIL FALLBACK (No API Key)`);
+        console.log(`📨 To: ${to}`);
+        console.log(`TEXT BODY: ${text}`);
         console.log('---------------------------------------------------');
         return true;
     }
 };
 
 module.exports = sendEmail;
-```
