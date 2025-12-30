@@ -84,7 +84,7 @@ const AdminPanel = () => {
                                             </span>
                                         </div>
                                     </td>
-                                    <td className="p-3 font-mono text-black text-xs">{u.email}</td>
+                                    <td className="p-3 font-mono text-black text-xs font-bold">{u.email}</td>
                                     <td className="p-3 text-slate-500 text-xs">
                                         {new Date(u.createdAt).toLocaleDateString()}
                                     </td>
