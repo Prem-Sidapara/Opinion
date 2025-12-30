@@ -44,6 +44,17 @@ const OpinionSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+
+// Virtual for Comment Count
+OpinionSchema.virtual('commentsCount', {
+    ref: 'Comment',
+    localField: '_id',
+    foreignField: 'opinionId',
+    count: true
 });
 
 module.exports = mongoose.model('Opinion', OpinionSchema);

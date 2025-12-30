@@ -51,7 +51,11 @@ router.get('/', async (req, res) => {
     }
 
     try {
-        const opinions = await Opinion.find(filter).sort(sortOption).limit(50).populate('userId', 'username');
+        const opinions = await Opinion.find(filter)
+            .sort(sortOption)
+            .limit(50)
+            .populate('userId', 'username')
+            .populate('commentsCount');
 
         const opinionsWithVote = opinions.map(op => {
             const opObj = op.toObject();
@@ -72,7 +76,10 @@ router.get('/', async (req, res) => {
 // GET Current User's Opinions
 router.get('/mine', verifyToken, async (req, res) => {
     try {
-        const opinions = await Opinion.find({ userId: req.user.userId }).sort({ createdAt: -1 }).populate('userId', 'username');
+        const opinions = await Opinion.find({ userId: req.user.userId })
+            .sort({ createdAt: -1 })
+            .populate('userId', 'username')
+            .populate('commentsCount');
         res.json(opinions);
     } catch (err) {
         res.status(500).json({ message: err.message });

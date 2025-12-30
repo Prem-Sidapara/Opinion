@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const OpinionCard = ({ opinion, onDelete }) => {
     const [votes, setVotes] = useState({ helpful: opinion.helpful, notHelpful: opinion.notHelpful });
     const [userVote, setUserVote] = useState(opinion.userVote || null);
+    const [commentCount, setCommentCount] = useState(opinion.commentsCount || 0);
     const [loading, setLoading] = useState(false);
     const [viewed, setViewed] = useState(false);
     const [showComments, setShowComments] = useState(false);
@@ -118,6 +119,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
         try {
             const res = await api.post(`/opinions/${opinion._id}/comments`, { content: newComment });
             setComments([...comments, res.data]);
+            setCommentCount(prev => prev + 1);
             setNewComment('');
         } catch (err) {
             console.error(err);
@@ -198,7 +200,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
                     title="Comments"
                 >
                     <MessageSquare size={12} />
-                    {showComments ? 'Hide' : ''}
+                    {showComments ? 'Hide' : (commentCount > 0 ? commentCount : '')}
                 </button>
             </div>
 
