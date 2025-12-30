@@ -18,10 +18,12 @@ router.post('/google', async (req, res) => {
             audience: '702970470822-i41gqbsksutqktni6iu6pcs2oll3lh52.apps.googleusercontent.com',
         });
         const { email, name, picture } = ticket.getPayload();
+        console.log(`[Google Login] Attempt for: ${email}`);
 
         let user = await User.findOne({ email });
 
         if (!user) {
+            console.log(`[Google Login] User NOT found. Creating new user...`);
             // Create new user (Pending Setup)
             const randomPassword = crypto.randomBytes(16).toString('hex');
             const salt = await bcrypt.genSalt(10);
@@ -34,9 +36,13 @@ router.post('/google', async (req, res) => {
                 isSetupComplete: false, // User needs to choose username
             });
             await user.save();
+        } else {
+            console.log(`[Google Login] User FOUND: ${user.username} (Setup Complete: ${user.isSetupComplete})`);
         }
 
         const jwtToken = jwt.sign({ userId: user._id, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+        console.log(`[Google Login] Returning isNewUser: ${!user.isSetupComplete}`);
 
         // Return isNewUser if setup is not complete
         res.json({
