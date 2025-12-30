@@ -4,6 +4,84 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
+const crypto = require('crypto');
+const sendEmail = require('../utils/sendEmail');
+
+// Send OTP
+router.post('/send-otp', async (req, res) => {
+    const { email } = req.body;
+
+    if (!email || !email.endsWith('@gmail.com')) {
+        return res.status(400).json({ message: 'Only @gmail.com addresses are allowed.' });
+    }
+
+    try {
+        // Generate 6 digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // Hash OTP
+        const salt = await bcrypt.genSalt(10);
+        const hashedOtp = await bcrypt.hash(otp, salt);
+
+        // Find or Create User (Stub)
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            // Create user without password
+            user = new User({
+                email,
+                username: email.split('@')[0],
+                password: null, // Explicitly null
+            });
+        }
+
+        user.otp = hashedOtp;
+        user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+        await user.save();
+
+        // Send Email
+        const sent = await sendEmail(email, 'Your Login Code', `Your login code is: ${otp}\nValid for 10 minutes.`);
+
+        if (sent) {
+            res.json({ message: 'OTP sent successfully' });
+        } else {
+            res.status(500).json({ message: 'Failed to send email' });
+        }
+
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Verify OTP
+router.post('/verify-otp', async (req, res) => {
+    const { email, otp } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) return res.status(400).json({ message: 'User not found' });
+
+        if (!user.otp || !user.otpExpires || Date.now() > user.otpExpires) {
+            return res.status(400).json({ message: 'OTP expired or invalid' });
+        }
+
+        const isMatch = await bcrypt.compare(otp, user.otp);
+        if (!isMatch) return res.status(400).json({ message: 'Invalid OTP' });
+
+        // Clear OTP
+        user.otp = null;
+        user.otpExpires = null;
+        await user.save();
+
+        // Login successful
+        const token = jwt.sign({ userId: user._id, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        res.json({ token, userId: user._id, username: user.username, email: user.email });
+
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // Register
 router.post('/register', async (req, res) => {
     const { email, password, username } = req.body;
@@ -52,6 +130,11 @@ router.post('/login', async (req, res) => {
     try {
         const user = await User.findOne({ email });
         if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+
+        // If user has no password (OTP only account)
+        if (!user.password) {
+            return res.status(400).json({ message: 'Please use OTP Login for this account.' });
+        }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });

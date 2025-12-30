@@ -9,7 +9,15 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: false, // Allow passwordless/OTP users
+    },
+    otp: {
+        type: String, // Hashed OTP
+        default: null,
+    },
+    otpExpires: {
+        type: Date,
+        default: null,
     },
     username: {
         type: String,
