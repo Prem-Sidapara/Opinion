@@ -11,21 +11,9 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: false, // Allow passwordless/OTP users
     },
-    otp: {
-        type: String, // Hashed OTP
-        default: null,
-    },
-    otpExpires: {
-        type: Date,
-        default: null,
-    },
     username: {
         type: String,
         required: true,
-    },
-    isSetupComplete: {
-        type: Boolean,
-        default: true, // Default true for normal signups, false for OTP stubs
     },
     createdAt: {
         type: Date,
