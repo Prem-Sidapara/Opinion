@@ -35,6 +35,8 @@ router.post('/google', async (req, res) => {
                 password: hashedPassword,
                 isSetupComplete: false, // User needs to choose username
             });
+            // Ensure boolean
+            if (user.isSetupComplete !== false) user.isSetupComplete = false;
             await user.save();
         } else {
             console.log(`[Google Login] User FOUND: ${user.username} (Setup Complete: ${user.isSetupComplete})`);
