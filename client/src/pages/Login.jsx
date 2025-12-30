@@ -8,14 +8,7 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
-    // OTP State
-    // OTP State
-    const [showOtpLogin, setShowOtpLogin] = useState(false);
-    const [otpStep, setOtpStep] = useState('email'); // 'email', 'otp', 'username'
-    const [otp, setOtp] = useState('');
-    const [username, setUsername] = useState('');
-
-    const { login, sendOtp, verifyOtp, updateUsername, error } = useAuth();
+    const { login, error } = useAuth();
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,40 +16,6 @@ const Login = () => {
         e.preventDefault();
         setIsSubmitting(true);
         const success = await login(email, password);
-        if (success) {
-            navigate('/');
-        }
-        setIsSubmitting(false);
-    };
-
-    const handleSendOtp = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        const success = await sendOtp(email);
-        if (success) {
-            setOtpStep('otp');
-        }
-        setIsSubmitting(false);
-    };
-
-    const handleVerifyOtp = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        const data = await verifyOtp(email, otp);
-        if (data) {
-            if (data.isNewUser) {
-                setOtpStep('username');
-            } else {
-                navigate('/');
-            }
-        }
-        setIsSubmitting(false);
-    };
-
-    const handleUpdateUsername = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        const success = await updateUsername(username);
         if (success) {
             navigate('/');
         }
@@ -80,131 +39,45 @@ const Login = () => {
                     </div>
                 )}
 
-                <div className="flex gap-4 mb-6 border-b border-gray-200">
-                    <button
-                        className={`pb-2 text-sm font-bold uppercase tracking-wider transition-colors ${!showOtpLogin ? 'border-b-2 border-black text-black' : 'text-slate-400 hover:text-slate-600'}`}
-                        onClick={() => setShowOtpLogin(false)}
-                    >
-                        Password
-                    </button>
-                    <button
-                        className={`pb-2 text-sm font-bold uppercase tracking-wider transition-colors ${showOtpLogin ? 'border-b-2 border-black text-black' : 'text-slate-400 hover:text-slate-600'}`}
-                        onClick={() => setShowOtpLogin(true)}
-                    >
-                        One-Time Code
-                    </button>
-                </div>
-
-                {!showOtpLogin ? (
-                    <form onSubmit={handlePasswordLogin} className="space-y-4">
-                        <div>
-                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5 pl-2">Email</label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full p-4 bg-white/50 border border-white/40 rounded-xl focus:bg-white focus:ring-2 focus:ring-black/5 outline-none font-medium transition-all"
-                                placeholder="you@gmail.com"
-                                required
-                            />
-                        </div>
-                        <div className="relative">
-                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5 pl-2">Password</label>
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full p-4 bg-white/50 border border-white/40 rounded-xl focus:bg-white focus:ring-2 focus:ring-black/5 outline-none font-medium transition-all pr-12"
-                                placeholder="••••••••"
-                                required
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-[38px] text-slate-400 hover:text-slate-600 transition-colors"
-                            >
-                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </button>
-                        </div>
-
+                <form onSubmit={handlePasswordLogin} className="space-y-4">
+                    <div>
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5 pl-2">Email</label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full p-4 bg-white/50 border border-white/40 rounded-xl focus:bg-white focus:ring-2 focus:ring-black/5 outline-none font-medium transition-all"
+                            placeholder="you@gmail.com"
+                            required
+                        />
+                    </div>
+                    <div className="relative">
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5 pl-2">Password</label>
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full p-4 bg-white/50 border border-white/40 rounded-xl focus:bg-white focus:ring-2 focus:ring-black/5 outline-none font-medium transition-all pr-12"
+                            placeholder="••••••••"
+                            required
+                        />
                         <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="w-full py-4 mt-2 bg-black text-white rounded-xl font-bold shadow-xl shadow-black/20 hover:shadow-2xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-[38px] text-slate-400 hover:text-slate-600 transition-colors"
                         >
-                            {isSubmitting ? 'Logging in...' : 'Log In'}
+                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
-                    </form>
-                ) : (
-                    <form onSubmit={
-                        otpStep === 'email' ? handleSendOtp :
-                            otpStep === 'otp' ? handleVerifyOtp :
-                                handleUpdateUsername
-                    } className="space-y-4">
+                    </div>
 
-                        {otpStep === 'email' && (
-                            <div>
-                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5 pl-2">Email</label>
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full p-4 bg-white/50 border border-white/40 rounded-xl focus:bg-white focus:ring-2 focus:ring-black/5 outline-none font-medium transition-all"
-                                    placeholder="you@gmail.com"
-                                    required
-                                />
-                            </div>
-                        )}
-
-                        {otpStep === 'otp' && (
-                            <div className="animate-in fade-in slide-in-from-top-2">
-                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5 pl-2">Enter Code</label>
-                                <input
-                                    type="text"
-                                    value={otp}
-                                    onChange={(e) => setOtp(e.target.value)}
-                                    className="w-full p-4 bg-white/50 border border-white/40 rounded-xl focus:bg-white focus:ring-2 focus:ring-black/5 outline-none font-medium transition-all text-center tracking-[0.5em] text-xl"
-                                    placeholder="XXXXXX"
-                                    maxLength={6}
-                                    required
-                                    autoFocus
-                                />
-                            </div>
-                        )}
-
-                        {otpStep === 'username' && (
-                            <div className="animate-in fade-in slide-in-from-top-2">
-                                <div className="text-center mb-4">
-                                    <p className="text-sm font-bold text-emerald-600">Login Verified! ✅</p>
-                                    <p className="text-xs text-slate-500">One last thing, choose a username.</p>
-                                </div>
-                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5 pl-2">Choose Username</label>
-                                <input
-                                    type="text"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    className="w-full p-4 bg-white/50 border border-white/40 rounded-xl focus:bg-white focus:ring-2 focus:ring-black/5 outline-none font-medium transition-all"
-                                    placeholder="cool_user_123"
-                                    required
-                                    autoFocus
-                                />
-                            </div>
-                        )}
-
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="w-full py-4 mt-2 bg-black text-white rounded-xl font-bold shadow-xl shadow-black/20 hover:shadow-2xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isSubmitting
-                                ? 'Processing...'
-                                : otpStep === 'email' ? 'Send Login Code'
-                                    : otpStep === 'otp' ? 'Verify & Login'
-                                        : 'Complete Setup'
-                            }
-                        </button>
-                    </form>
-                )}
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full py-4 mt-2 bg-black text-white rounded-xl font-bold shadow-xl shadow-black/20 hover:shadow-2xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isSubmitting ? 'Logging in...' : 'Log In'}
+                    </button>
+                </form>
 
                 <p className="text-center mt-8 text-slate-500 font-medium">
                     Don't have an account?{' '}
