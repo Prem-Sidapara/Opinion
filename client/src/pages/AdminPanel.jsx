@@ -79,7 +79,7 @@ const AdminPanel = () => {
                                             <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400">
                                                 {u.username[0].toUpperCase()}
                                             </div>
-                                            <span className={u.username === 'prem' ? 'text-red-400 font-bold' : ''}>
+                                            <span className={u.username === 'prem' ? 'text-red-500 font-bold' : 'text-black font-bold'}>
                                                 @{u.username}
                                             </span>
                                         </div>
