@@ -20,7 +20,11 @@ const Feed = () => {
         try {
             const res = await api.get('/topics');
             // Assuming res.data is array of objects { name: 'tech', ... }
-            setTopics(['all', ...res.data.map(t => t.name)]);
+            const fetchedTopics = res.data.map(t => t.name);
+            const defaultTopics = ['lifestyle', 'tech', 'career', 'relationships', 'politics'];
+            // Merge and Unique
+            const uniqueTopics = [...new Set([...defaultTopics, ...fetchedTopics])];
+            setTopics(['all', ...uniqueTopics]);
         } catch (err) {
             console.error('Failed to fetch topics', err);
             // Fallback
