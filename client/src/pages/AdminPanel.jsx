@@ -79,12 +79,12 @@ const AdminPanel = () => {
                                             <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400">
                                                 {u.username[0].toUpperCase()}
                                             </div>
-                                            <span className={u.username === 'prem' ? 'text-red-500 font-bold' : 'text-black font-bold'}>
+                                            <span className={u.username === 'prem' ? 'text-red-500 font-bold' : 'text-black font-normal'}>
                                                 @{u.username}
                                             </span>
                                         </div>
                                     </td>
-                                    <td className="p-3 font-mono text-slate-400 text-xs">{u.email}</td>
+                                    <td className="p-3 font-mono text-black text-xs">{u.email}</td>
                                     <td className="p-3 text-slate-500 text-xs">
                                         {new Date(u.createdAt).toLocaleDateString()}
                                     </td>
