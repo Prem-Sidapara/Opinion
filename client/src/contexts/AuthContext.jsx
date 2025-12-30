@@ -67,15 +67,27 @@ export const AuthProvider = ({ children }) => {
             const { token: jwtToken, ...userData } = res.data;
             localStorage.setItem('token', jwtToken);
             setUser(userData);
-            return true;
+            return res.data; // Return full data including isNewUser
         } catch (err) {
             setError(err.response?.data?.message || 'Google Login failed');
             return false;
         }
     };
 
+    const updateUsername = async (username) => {
+        setError(null);
+        try {
+            const res = await api.put('/auth/update-username', { username });
+            setUser(prev => ({ ...prev, username: res.data.username, isSetupComplete: true }));
+            return true;
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to update username');
+            return false;
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loading, error, login, register, logout, googleLogin }}>
+        <AuthContext.Provider value={{ user, loading, error, login, register, logout, googleLogin, updateUsername }}>
             {children}
         </AuthContext.Provider>
     );

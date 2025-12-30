@@ -22,8 +22,7 @@ router.post('/google', async (req, res) => {
         let user = await User.findOne({ email });
 
         if (!user) {
-            // Create new verified user
-            // Password is a random long string since they use Google to login
+            // Create new user (Pending Setup)
             const randomPassword = crypto.randomBytes(16).toString('hex');
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(randomPassword, salt);
@@ -32,17 +31,47 @@ router.post('/google', async (req, res) => {
                 email,
                 username: name.replace(/\s+/g, '_').toLowerCase() + Math.floor(Math.random() * 1000),
                 password: hashedPassword,
-                // isverified is implied by existence in this system for now, or we can add it later
+                isSetupComplete: false, // User needs to choose username
             });
             await user.save();
         }
 
         const jwtToken = jwt.sign({ userId: user._id, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
-        res.json({ token: jwtToken, userId: user._id, username: user.username, email: user.email });
+
+        // Return isNewUser if setup is not complete
+        res.json({
+            token: jwtToken,
+            userId: user._id,
+            username: user.username,
+            email: user.email,
+            isNewUser: !user.isSetupComplete
+        });
 
     } catch (err) {
         console.error('Google Auth Error:', err);
         res.status(400).json({ message: 'Google authentication failed' });
+    }
+});
+
+// Update Username (Complete Setup)
+router.put('/update-username', verifyToken, async (req, res) => {
+    const { username } = req.body;
+    if (!username) return res.status(400).json({ message: 'Username is required' });
+
+    try {
+        const existing = await User.findOne({ username });
+        if (existing) return res.status(400).json({ message: 'Username already taken' });
+
+        const user = await User.findById(req.userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        user.username = username;
+        user.isSetupComplete = true;
+        await user.save();
+
+        res.json({ message: 'Username updated', username });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
 
