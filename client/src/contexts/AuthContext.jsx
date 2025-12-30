@@ -78,15 +78,27 @@ export const AuthProvider = ({ children }) => {
             const { token, ...userData } = res.data;
             localStorage.setItem('token', token);
             setUser(userData);
-            return true;
+            return res.data; // Return full data (including isNewUser)
         } catch (err) {
             setError(err.response?.data?.message || 'Invalid OTP');
             return false;
         }
     };
 
+    const updateUsername = async (username) => {
+        setError(null);
+        try {
+            const res = await api.put('/auth/update-username', { username });
+            setUser(prev => ({ ...prev, username: res.data.username }));
+            return true;
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to update username');
+            return false;
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loading, error, login, register, logout, sendOtp, verifyOtp }}>
+        <AuthContext.Provider value={{ user, loading, error, login, register, logout, sendOtp, verifyOtp, updateUsername }}>
             {children}
         </AuthContext.Provider>
     );

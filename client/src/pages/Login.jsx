@@ -9,11 +9,13 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     // OTP State
+    // OTP State
     const [showOtpLogin, setShowOtpLogin] = useState(false);
-    const [otpStep, setOtpStep] = useState('email'); // 'email' or 'otp'
+    const [otpStep, setOtpStep] = useState('email'); // 'email', 'otp', 'username'
     const [otp, setOtp] = useState('');
+    const [username, setUsername] = useState('');
 
-    const { login, sendOtp, verifyOtp, error } = useAuth();
+    const { login, sendOtp, verifyOtp, updateUsername, error } = useAuth();
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -40,7 +42,21 @@ const Login = () => {
     const handleVerifyOtp = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        const success = await verifyOtp(email, otp);
+        const data = await verifyOtp(email, otp);
+        if (data) {
+            if (data.isNewUser) {
+                setOtpStep('username');
+            } else {
+                navigate('/');
+            }
+        }
+        setIsSubmitting(false);
+    };
+
+    const handleUpdateUsername = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        const success = await updateUsername(username);
         if (success) {
             navigate('/');
         }
@@ -120,19 +136,25 @@ const Login = () => {
                         </button>
                     </form>
                 ) : (
-                    <form onSubmit={otpStep === 'email' ? handleSendOtp : handleVerifyOtp} className="space-y-4">
-                        <div>
-                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5 pl-2">Email</label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                disabled={otpStep === 'otp'}
-                                className="w-full p-4 bg-white/50 border border-white/40 rounded-xl focus:bg-white focus:ring-2 focus:ring-black/5 outline-none font-medium transition-all disabled:opacity-50"
-                                placeholder="you@gmail.com"
-                                required
-                            />
-                        </div>
+                    <form onSubmit={
+                        otpStep === 'email' ? handleSendOtp :
+                            otpStep === 'otp' ? handleVerifyOtp :
+                                handleUpdateUsername
+                    } className="space-y-4">
+
+                        {otpStep === 'email' && (
+                            <div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5 pl-2">Email</label>
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full p-4 bg-white/50 border border-white/40 rounded-xl focus:bg-white focus:ring-2 focus:ring-black/5 outline-none font-medium transition-all"
+                                    placeholder="you@gmail.com"
+                                    required
+                                />
+                            </div>
+                        )}
 
                         {otpStep === 'otp' && (
                             <div className="animate-in fade-in slide-in-from-top-2">
@@ -147,13 +169,25 @@ const Login = () => {
                                     required
                                     autoFocus
                                 />
-                                <button
-                                    type="button"
-                                    onClick={() => setOtpStep('email')}
-                                    className="text-xs text-slate-400 font-bold hover:text-black mt-2 ml-2"
-                                >
-                                    CHANGE EMAIL
-                                </button>
+                            </div>
+                        )}
+
+                        {otpStep === 'username' && (
+                            <div className="animate-in fade-in slide-in-from-top-2">
+                                <div className="text-center mb-4">
+                                    <p className="text-sm font-bold text-emerald-600">Login Verified! ✅</p>
+                                    <p className="text-xs text-slate-500">One last thing, choose a username.</p>
+                                </div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5 pl-2">Choose Username</label>
+                                <input
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    className="w-full p-4 bg-white/50 border border-white/40 rounded-xl focus:bg-white focus:ring-2 focus:ring-black/5 outline-none font-medium transition-all"
+                                    placeholder="cool_user_123"
+                                    required
+                                    autoFocus
+                                />
                             </div>
                         )}
 
@@ -164,7 +198,9 @@ const Login = () => {
                         >
                             {isSubmitting
                                 ? 'Processing...'
-                                : otpStep === 'email' ? 'Send Login Code' : 'Verify & Login'
+                                : otpStep === 'email' ? 'Send Login Code'
+                                    : otpStep === 'otp' ? 'Verify & Login'
+                                        : 'Complete Setup'
                             }
                         </button>
                     </form>

@@ -23,6 +23,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    isSetupComplete: {
+        type: Boolean,
+        default: true, // Default true for normal signups, false for OTP stubs
+    },
     createdAt: {
         type: Date,
         default: Date.now,
