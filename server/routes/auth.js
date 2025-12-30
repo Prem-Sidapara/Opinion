@@ -113,6 +113,7 @@ router.post('/register', async (req, res) => {
             email,
             password: hashedPassword,
             username: username || email.split('@')[0],
+            isSetupComplete: true, // Manual registration is always complete
         });
         await user.save();
 
