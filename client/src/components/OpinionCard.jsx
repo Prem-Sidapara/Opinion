@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Eye, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Eye, ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
