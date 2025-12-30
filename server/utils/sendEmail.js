@@ -1,41 +1,43 @@
-const { Resend } = require('resend');
+```javascript
+const SibApiV3Sdk = require('sib-api-v3-sdk');
 
 const sendEmail = async (to, subject, text) => {
-    // 0. FREE TIER DEV MODE: Always log code to console
-    // This ensures you can login even if Resend restricts sending to unverified emails
-    console.log('\n===================================================');
-    console.log(`🔑 DEV MODE - LOGIN CODE:`);
-    console.log(`    ${text.split('code is: ')[1]?.split('\n')[0] || text}`);
-    console.log(`(Use this code if email doesn't arrive)`);
-    console.log('===================================================\n');
-
-    // 1. Try Resend (API) - The Best Way
-    if (process.env.RESEND_API_KEY) {
+    // 1. Try Brevo (Sendinblue) - Real Emails for Free
+    if (process.env.BREVO_API_KEY) {
         try {
-            const resend = new Resend(process.env.RESEND_API_KEY);
-            await resend.emails.send({
-                from: 'onboarding@resend.dev', // Default testing domain
-                to: to,
-                subject: subject,
-                text: text,
-            });
-            console.log(`📧 Email sent to ${to} via Resend`);
+            const defaultClient = SibApiV3Sdk.ApiClient.instance;
+            const apiKey = defaultClient.authentications['api-key'];
+            apiKey.apiKey = process.env.BREVO_API_KEY;
+
+            const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+            const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+            sendSmtpEmail.subject = subject;
+            sendSmtpEmail.htmlContent = `< html > <body><p>${text.replace(/\n/g, "<br>")}</p></body></html > `;
+            sendSmtpEmail.sender = { "name": "Opinions App", "email": process.env.EMAIL_USER || "no-reply@opinions.com" };
+            sendSmtpEmail.to = [{ "email": to }];
+
+            await apiInstance.sendTransacEmail(sendSmtpEmail);
+            console.log(`📧 Email sent to ${ to } via Brevo`);
             return true;
         } catch (error) {
-            console.error('Resend API failed:', error);
-            // Fall through to console logging...
+            console.error('Brevo API failed:', error);
+            // Don't fallback to console if user explicitly asked not to show logs
+            // But we must return false so UI knows it failed
+            return false;
         }
     }
-
-    // 2. Fallback: Log to console (Fail safe)
-    console.log('---------------------------------------------------');
-    console.log(`⚠️  EMAIL FALLBACK (Resend not verified or failed)`);
-    console.log(`📨 To: ${to}`);
-    console.log(`📝 Subject: ${subject}`);
-    console.log(`TEXT BODY:`);
-    console.log(text);
-    console.log('---------------------------------------------------');
-    return true;
+    
+    // 2. Fallback: Log to console ONLY if no key is configured (Local Dev)
+    if (!process.env.BREVO_API_KEY) {
+        console.log('---------------------------------------------------');
+        console.log(`⚠️  EMAIL FALLBACK(No API Key)`);
+        console.log(`📨 To: ${ to } `);
+        console.log(`TEXT BODY: ${ text } `);
+        console.log('---------------------------------------------------');
+        return true;
+    }
 };
 
 module.exports = sendEmail;
+```
