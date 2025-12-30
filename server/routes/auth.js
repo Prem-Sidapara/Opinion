@@ -203,4 +203,39 @@ router.put('/update-username', verifyToken, async (req, res) => {
     }
 });
 
+// ADMIN: Get All Users
+router.get('/users', verifyToken, async (req, res) => {
+    try {
+        const admin = await User.findById(req.userId);
+        if (admin.username !== 'prem') {
+            return res.status(403).json({ message: 'Access denied: Admins only' });
+        }
+
+        const users = await User.find().select('-password -otp -otpExpires').sort({ createdAt: -1 });
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// ADMIN: Delete User
+router.delete('/users/:id', verifyToken, async (req, res) => {
+    try {
+        const admin = await User.findById(req.userId);
+        if (admin.username !== 'prem') {
+            return res.status(403).json({ message: 'Access denied: Admins only' });
+        }
+
+        // Prevent self-deletion
+        if (req.params.id === admin._id.toString()) {
+            return res.status(400).json({ message: 'You cannot delete yourself.' });
+        }
+
+        await User.findByIdAndDelete(req.params.id);
+        res.json({ message: 'User deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;
