@@ -16,14 +16,31 @@ const CreateOpinionModal = ({ onClose, onCreated }) => {
     React.useEffect(() => {
         const fetchTopics = async () => {
             try {
-                // alert('Fetching Topics...'); // REMOVE LATER
                 const res = await api.get('/topics');
-                console.log('DEBUG: Fetched Topics:', res.data);
-                setAvailableTopics(res.data);
-                if (res.data.length > 0) setTopic(res.data[0].name);
+                const fetchedTopics = res.data; // Array of objects { _id, name, ... }
+
+                const defaultTopics = ['lifestyle', 'tech', 'career', 'relationships', 'politics'];
+
+                // We need to merge them. Users might have created duplicate names if DB was empty?
+                // Let's rely on names.
+                const fetchedNames = fetchedTopics.map(t => t.name);
+                const allNames = [...new Set([...defaultTopics, ...fetchedNames])];
+
+                // Convert back to objects for the UI (UI uses .name)
+                // We map strings to objects. Since we only need name for now.
+                const combinedTopics = allNames.map(name => {
+                    const existing = fetchedTopics.find(t => t.name === name);
+                    return existing || { _id: name, name: name }; // Use name as ID if virtual
+                });
+
+                setAvailableTopics(combinedTopics);
+                if (combinedTopics.length > 0) setTopic(combinedTopics[0].name);
             } catch (err) {
                 console.error('Failed to fetch topics', err);
-                // alert('Fetch Failed: ' + err.message);
+                // Fallback if API fails completely
+                const defaultTopics = ['lifestyle', 'tech', 'career', 'relationships', 'politics'];
+                setAvailableTopics(defaultTopics.map(name => ({ _id: name, name })));
+                setTopic('lifestyle');
             }
         };
         fetchTopics();
