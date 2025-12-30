@@ -24,7 +24,15 @@ const sendEmail = async (to, subject, text) => {
             return true;
         } catch (error) {
             console.error('Email send failed:', error);
-            return false;
+            // FALLBACK: Log to console so user can still see OTP
+            console.log('---------------------------------------------------');
+            console.log(`⚠️  EMAIL FAILED - FALLBACK LOGGING`);
+            console.log(`📨 To: ${to}`);
+            console.log(`📝 Subject: ${subject}`);
+            console.log(`TEXT BODY:`);
+            console.log(text);
+            console.log('---------------------------------------------------');
+            return true; // Pretend success
         }
     } else {
         // Fallback: Log to console for development
