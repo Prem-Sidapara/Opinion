@@ -1,4 +1,3 @@
-```javascript
 const { Resend } = require('resend');
 
 const sendEmail = async (to, subject, text) => {
@@ -12,24 +11,23 @@ const sendEmail = async (to, subject, text) => {
                 subject: subject,
                 text: text,
             });
-            console.log(`📧 Email sent to ${ to } via Resend`);
+            console.log(`📧 Email sent to ${to} via Resend`);
             return true;
         } catch (error) {
             console.error('Resend API failed:', error);
             // Fall through to console logging...
         }
     }
-    
+
     // 2. Fallback: Log to console (Fail safe)
     console.log('---------------------------------------------------');
-    console.log(`⚠️  EMAIL FALLBACK(Resend not verified or failed)`);
-    console.log(`📨 To: ${ to } `);
-    console.log(`📝 Subject: ${ subject } `);
-    console.log(`TEXT BODY: `);
+    console.log(`⚠️  EMAIL FALLBACK (Resend not verified or failed)`);
+    console.log(`📨 To: ${to}`);
+    console.log(`📝 Subject: ${subject}`);
+    console.log(`TEXT BODY:`);
     console.log(text);
     console.log('---------------------------------------------------');
     return true;
 };
 
 module.exports = sendEmail;
-```
