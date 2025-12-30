@@ -17,6 +17,7 @@ const CreateOpinionModal = ({ onClose, onCreated }) => {
         const fetchTopics = async () => {
             try {
                 const res = await api.get('/topics');
+                console.log('DEBUG: Fetched Topics:', res.data);
                 setAvailableTopics(res.data);
                 if (res.data.length > 0) setTopic(res.data[0].name);
             } catch (err) {
