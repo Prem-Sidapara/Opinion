@@ -54,11 +54,10 @@ router.post('/login', async (req, res) => {
 
     try {
         const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
-        // If user has no password (OTP only account)
-        if (!user.password) {
-            return res.status(400).json({ message: 'Please use OTP Login for this account.' });
+        // Check if user exists AND has a password
+        if (!user || !user.password) {
+            return res.status(400).json({ message: 'Invalid credentials' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
