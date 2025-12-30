@@ -181,9 +181,13 @@ router.delete('/:id', verifyToken, async (req, res) => {
         const opinion = await Opinion.findById(req.params.id).populate('userId', 'username');
         if (!opinion) return res.status(404).json({ message: 'Opinion not found' });
 
+        // Fetch the user requesting the delete to verify admin status
+        const requestor = await (require('../models/User')).findById(req.user.userId);
+        const isAdmin = requestor && requestor.username === 'prem';
+
         // Check Permissions: Owner OR Admin (@prem)
-        const isOwner = opinion.userId._id.toString() === req.user.userId;
-        const isAdmin = req.user.username === 'prem';
+        // Handle case where opinion.userId is null (if user was deleted)
+        const isOwner = opinion.userId && opinion.userId._id.toString() === req.user.userId;
 
         if (!isOwner && !isAdmin) {
             return res.status(403).json({ message: 'You are not authorized to delete this opinion' });
