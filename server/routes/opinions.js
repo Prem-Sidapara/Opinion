@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Opinion = require('../models/Opinion');
 const Comment = require('../models/Comment');
+const Topic = require('../models/Topic');
 const jwt = require('jsonwebtoken');
 
 // Middleware to verify token
@@ -96,12 +97,19 @@ router.post('/', verifyToken, async (req, res) => {
 
     const opinion = new Opinion({
         content,
-        topic,
+        topic: topic.trim().toLowerCase(),
         userId,
         ip: userIp
     });
 
     try {
+        // Auto-create Topic if it doesn't exist
+        const normalizedTopic = topic.trim().toLowerCase();
+        const existingTopic = await Topic.findOne({ name: normalizedTopic });
+        if (!existingTopic) {
+            await new Topic({ name: normalizedTopic, description: 'User generated' }).save();
+        }
+
         const newOpinion = await opinion.save();
         await newOpinion.populate('userId', 'username');
         res.status(201).json(newOpinion);

@@ -2,20 +2,45 @@ import React, { useState } from 'react';
 import { X, Mic } from 'lucide-react';
 import api from '../api';
 
-const TOPICS = ['lifestyle', 'tech', 'career', 'relationships', 'politics'];
+
 
 const CreateOpinionModal = ({ onClose, onCreated }) => {
     const [content, setContent] = useState('');
-    const [topic, setTopic] = useState(TOPICS[0]);
+    const [topic, setTopic] = useState('');
+    const [availableTopics, setAvailableTopics] = useState([]);
+    const [isCustomTopic, setIsCustomTopic] = useState(false);
+    const [customTopic, setCustomTopic] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    React.useEffect(() => {
+        const fetchTopics = async () => {
+            try {
+                const res = await api.get('/topics');
+                setAvailableTopics(res.data);
+                if (res.data.length > 0) setTopic(res.data[0].name);
+            } catch (err) {
+                console.error('Failed to fetch topics');
+            }
+        };
+        fetchTopics();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+
+        const finalTopic = isCustomTopic ? customTopic : topic;
+
+        if (!finalTopic.trim()) {
+            setError('Please select or enter a topic');
+            setLoading(false);
+            return;
+        }
+
         try {
-            await api.post('/opinions', { content, topic });
+            await api.post('/opinions', { content, topic: finalTopic });
             onCreated();
             onClose();
         } catch (err) {
@@ -51,22 +76,52 @@ const CreateOpinionModal = ({ onClose, onCreated }) => {
                     )}
 
                     <div className="mb-6">
-                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Select Topic</label>
-                        <div className="flex flex-wrap gap-2">
-                            {TOPICS.map(t => (
-                                <button
-                                    type="button"
-                                    key={t}
-                                    onClick={() => setTopic(t)}
-                                    className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 border ${topic === t
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
+                            {isCustomTopic ? 'Enter New Topic' : 'Select Topic'}
+                        </label>
+
+                        {!isCustomTopic ? (
+                            <div className="flex flex-wrap gap-2">
+                                {availableTopics.map(t => (
+                                    <button
+                                        type="button"
+                                        key={t._id}
+                                        onClick={() => setTopic(t.name)}
+                                        className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 border ${topic === t.name
                                             ? 'bg-black text-white border-black shadow-lg scale-105'
                                             : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                                        }`}
+                                            }`}
+                                    >
+                                        {t.name.charAt(0).toUpperCase() + t.name.slice(1)}
+                                    </button>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => { setIsCustomTopic(true); setCustomTopic(''); }}
+                                    className="px-4 py-2 rounded-xl text-sm font-bold border border-dashed border-slate-300 text-slate-400 hover:border-black hover:text-black transition-all bg-slate-50 hover:bg-white"
                                 >
-                                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                                    + Add New
                                 </button>
-                            ))}
-                        </div>
+                            </div>
+                        ) : (
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={customTopic}
+                                    onChange={(e) => setCustomTopic(e.target.value)}
+                                    className="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-black focus:ring-1 focus:ring-black outline-none font-medium"
+                                    placeholder="e.g., Gaming, Crypto, Food..."
+                                    autoFocus
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setIsCustomTopic(false)}
+                                    className="px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="mb-6">
