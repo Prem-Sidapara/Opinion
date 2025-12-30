@@ -13,6 +13,9 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+// Trust Proxy (Required for Render/Vercel)
+app.set('trust proxy', 1);
+
 // Rate Limiter (Global)
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
