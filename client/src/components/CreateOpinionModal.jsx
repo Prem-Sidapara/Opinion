@@ -16,12 +16,14 @@ const CreateOpinionModal = ({ onClose, onCreated }) => {
     React.useEffect(() => {
         const fetchTopics = async () => {
             try {
+                // alert('Fetching Topics...'); // REMOVE LATER
                 const res = await api.get('/topics');
                 console.log('DEBUG: Fetched Topics:', res.data);
                 setAvailableTopics(res.data);
                 if (res.data.length > 0) setTopic(res.data[0].name);
             } catch (err) {
-                console.error('Failed to fetch topics');
+                console.error('Failed to fetch topics', err);
+                // alert('Fetch Failed: ' + err.message);
             }
         };
         fetchTopics();
