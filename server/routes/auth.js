@@ -8,6 +8,18 @@ const crypto = require('crypto');
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client('702970470822-i41gqbsksutqktni6iu6pcs2oll3lh52.apps.googleusercontent.com');
 
+const verifyToken = (req, res, next) => {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'No token' });
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.userId = decoded.userId;
+        next();
+    } catch (err) {
+        res.status(401).json({ message: 'Invalid token' });
+    }
+};
+
 // Google Login
 router.post('/google', async (req, res) => {
     const { token } = req.body;
@@ -163,18 +175,6 @@ router.get('/me', async (req, res) => {
         res.status(401).json({ message: 'Invalid token' });
     }
 });
-
-const verifyToken = (req, res, next) => {
-    const token = req.headers['authorization']?.split(' ')[1];
-    if (!token) return res.status(401).json({ message: 'No token' });
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.userId = decoded.userId;
-        next();
-    } catch (err) {
-        res.status(401).json({ message: 'Invalid token' });
-    }
-};
 
 // ADMIN: Get All Users
 router.get('/users', verifyToken, async (req, res) => {
