@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Lock, Eye, EyeOff } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
-    const { login, error } = useAuth();
+    const { login, googleLogin, error } = useAuth();
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -20,6 +21,13 @@ const Login = () => {
             navigate('/');
         }
         setIsSubmitting(false);
+    };
+
+    const handleGoogleSuccess = async (credentialResponse) => {
+        const success = await googleLogin(credentialResponse.credential);
+        if (success) {
+            navigate('/');
+        }
     };
 
     return (
@@ -38,6 +46,28 @@ const Login = () => {
                         {error}
                     </div>
                 )}
+
+                <div className="mb-6 flex justify-center">
+                    <GoogleLogin
+                        onSuccess={handleGoogleSuccess}
+                        onError={() => {
+                            console.log('Login Failed');
+                        }}
+                        theme="filled_black"
+                        shape="pill"
+                        text="continue_with"
+                        width="100%"
+                    />
+                </div>
+
+                <div className="relative mb-6">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-white/80 px-2 text-slate-500 font-bold backdrop-blur-sm">Or continue with</span>
+                    </div>
+                </div>
 
                 <form onSubmit={handlePasswordLogin} className="space-y-4">
                     <div>

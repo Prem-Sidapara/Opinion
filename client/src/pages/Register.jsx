@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { UserPlus, Eye, EyeOff } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 
 const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const { register, error } = useAuth();
+
+    const { register, googleLogin, error } = useAuth();
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -22,6 +24,13 @@ const Register = () => {
         setIsSubmitting(false);
     };
 
+    const handleGoogleSuccess = async (credentialResponse) => {
+        const success = await googleLogin(credentialResponse.credential);
+        if (success) {
+            navigate('/');
+        }
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
             <div className="glass w-full max-w-md p-8 rounded-3xl animate-in fade-in zoom-in duration-300">
@@ -29,8 +38,8 @@ const Register = () => {
                     <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-black text-white mb-4 shadow-lg">
                         <UserPlus size={20} />
                     </div>
-                    <h1 className="text-3xl font-black text-slate-900">Join Us</h1>
-                    <p className="text-slate-500 font-medium">Speak your mind, unfiltered.</p>
+                    <h1 className="text-3xl font-black text-slate-900">Create Account</h1>
+                    <p className="text-slate-500 font-medium">Join us and start sharing.</p>
                 </div>
 
                 {error && (
@@ -38,6 +47,28 @@ const Register = () => {
                         {error}
                     </div>
                 )}
+
+                <div className="mb-6 flex justify-center">
+                    <GoogleLogin
+                        onSuccess={handleGoogleSuccess}
+                        onError={() => {
+                            console.log('Login Failed');
+                        }}
+                        theme="filled_black"
+                        shape="pill"
+                        text="continue_with"
+                        width="100%"
+                    />
+                </div>
+
+                <div className="relative mb-6">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-white/80 px-2 text-slate-500 font-bold backdrop-blur-sm">Or register with email</span>
+                    </div>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>

@@ -5,6 +5,46 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
 const crypto = require('crypto');
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client('702970470822-i41gqbsksutqktni6iu6pcs2oll3lh52.apps.googleusercontent.com');
+
+// Google Login
+router.post('/google', async (req, res) => {
+    const { token } = req.body;
+
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: '702970470822-i41gqbsksutqktni6iu6pcs2oll3lh52.apps.googleusercontent.com',
+        });
+        const { email, name, picture } = ticket.getPayload();
+
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            // Create new verified user
+            // Password is a random long string since they use Google to login
+            const randomPassword = crypto.randomBytes(16).toString('hex');
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+            user = new User({
+                email,
+                username: name.replace(/\s+/g, '_').toLowerCase() + Math.floor(Math.random() * 1000),
+                password: hashedPassword,
+                // isverified is implied by existence in this system for now, or we can add it later
+            });
+            await user.save();
+        }
+
+        const jwtToken = jwt.sign({ userId: user._id, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        res.json({ token: jwtToken, userId: user._id, username: user.username, email: user.email });
+
+    } catch (err) {
+        console.error('Google Auth Error:', err);
+        res.status(400).json({ message: 'Google authentication failed' });
+    }
+});
 
 // Register
 router.post('/register', async (req, res) => {

@@ -60,8 +60,22 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const googleLogin = async (token) => {
+        setError(null);
+        try {
+            const res = await api.post('/auth/google', { token });
+            const { token: jwtToken, ...userData } = res.data;
+            localStorage.setItem('token', jwtToken);
+            setUser(userData);
+            return true;
+        } catch (err) {
+            setError(err.response?.data?.message || 'Google Login failed');
+            return false;
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loading, error, login, register, logout }}>
+        <AuthContext.Provider value={{ user, loading, error, login, register, logout, googleLogin }}>
             {children}
         </AuthContext.Provider>
     );
