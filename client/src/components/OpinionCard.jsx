@@ -173,7 +173,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
                 <button
                     onClick={() => handleVote('helpful')}
                     disabled={loading}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase transition-all ${userVote === 'helpful'
+                    className={`flex items-center border border-gray-300 rounded gap-1.5 px-3 py-1.5 text-xs font-bold uppercase transition-all ${userVote === 'helpful'
                         ? 'bg-black text-white shadow-md'
                         : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-black'
                         }`}
@@ -185,7 +185,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
                 <button
                     onClick={() => handleVote('notHelpful')}
                     disabled={loading}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase transition-all ${userVote === 'notHelpful'
+                    className={`flex items-center border border-gray-300 rounded gap-1.5 px-3 py-1.5 text-xs font-bold uppercase transition-all ${userVote === 'notHelpful'
                         ? 'bg-slate-800 text-white shadow-md'
                         : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-black'
                         }`}
@@ -196,7 +196,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
 
                 <button
                     onClick={toggleComments}
-                    className="px-3 py-1.5 text-xs font-bold uppercase bg-white border border-gray-300 hover:bg-gray-100 text-gray-600 flex items-center gap-1.5"
+                    className="px-3 py-1.5 border border-gray-300 rounded text-xs font-bold uppercase bg-white hover:bg-gray-100 text-gray-600 flex items-center gap-1.5"
                     title="Comments"
                 >
                     <MessageSquare size={12} />
