@@ -55,6 +55,7 @@ router.post('/google', async (req, res) => {
             });
             // Ensure boolean
             if (user.isSetupComplete !== false) user.isSetupComplete = false;
+            console.log(`[Google Login] Pre-Save New User isSetupComplete: ${user.isSetupComplete}`);
             await user.save();
             console.log(`[Google Login] New User Created: ${user.email} (isSetupComplete: ${user.isSetupComplete})`);
         } else {
@@ -78,6 +79,7 @@ router.post('/google', async (req, res) => {
 
         const jwtToken = jwt.sign({ userId: user._id, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
+        console.log(`[Google Login] Final Check - user.isSetupComplete: ${user.isSetupComplete}`);
         console.log(`[Google Login] Returning isNewUser: ${!user.isSetupComplete}`);
 
         // Return isNewUser if setup is not complete
