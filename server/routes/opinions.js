@@ -88,7 +88,7 @@ router.get('/mine', verifyToken, async (req, res) => {
 
 // POST Opinion
 router.post('/', verifyToken, async (req, res) => {
-    const { content, topic } = req.body;
+    const { content, topic, isAnonymous } = req.body;
     const userId = req.user.userId;
     // We still capture IP for auditing, but limit is primarily UserID based now.
     const userIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
@@ -106,7 +106,8 @@ router.post('/', verifyToken, async (req, res) => {
         content,
         topic: topic.trim().toLowerCase(),
         userId,
-        ip: userIp
+        ip: userIp,
+        isAnonymous: !!isAnonymous
     });
 
     try {
@@ -130,6 +131,35 @@ router.patch('/:id/view', async (req, res) => {
     try {
         await Opinion.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
         res.status(200).send();
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// PATCH Toggle Anonymity (Owner Only)
+router.patch('/:id/toggle-anonymity', verifyToken, async (req, res) => {
+    try {
+        const opinion = await Opinion.findById(req.params.id);
+        if (!opinion) return res.status(404).json({ message: 'Opinion not found' });
+
+        if (opinion.userId.toString() !== req.user.userId) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+
+        opinion.isAnonymous = !opinion.isAnonymous;
+        await opinion.save();
+
+        // Populate and return
+        await opinion.populate('userId', 'username');
+        await opinion.populate('commentsCount');
+
+        // Re-construct with user vote
+        const opObj = opinion.toObject();
+        opObj.userVote = getUserVote(opinion, req.user.userId);
+        delete opObj.likedBy;
+        delete opObj.dislikedBy;
+
+        res.json(opObj);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

@@ -40,6 +40,10 @@ const OpinionSchema = new mongoose.Schema({
         type: String, // Keeping for audit
         required: true,
     },
+    isAnonymous: {
+        type: Boolean,
+        default: false,
+    },
     createdAt: {
         type: Date,
         default: Date.now,

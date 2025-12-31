@@ -10,6 +10,7 @@ const CreateOpinionModal = ({ onClose, onCreated }) => {
     const [availableTopics, setAvailableTopics] = useState([]);
     const [isCustomTopic, setIsCustomTopic] = useState(false);
     const [customTopic, setCustomTopic] = useState('');
+    const [isAnonymous, setIsAnonymous] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -60,7 +61,7 @@ const CreateOpinionModal = ({ onClose, onCreated }) => {
         }
 
         try {
-            await api.post('/opinions', { content, topic: finalTopic });
+            await api.post('/opinions', { content, topic: finalTopic, isAnonymous });
             onCreated();
             onClose();
         } catch (err) {
@@ -144,21 +145,29 @@ const CreateOpinionModal = ({ onClose, onCreated }) => {
                         )}
                     </div>
 
-                    <div className="mb-6">
-                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
-                            Your Opinion <span className={content.length > 450 ? "text-rose-500" : "text-slate-300"}>{content.length}/500</span>
+                    <div className="relative">
+                        <textarea
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            maxLength={500}
+                            rows={5}
+                            className="w-full text-lg p-4 bg-slate-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black/10 focus:ring-0 outline-none resize-none transition-colors placeholder:text-slate-300 font-medium text-slate-800"
+                            placeholder="What's heavily on your mind?"
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-4 flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="anonymous"
+                            className="w-4 h-4 rounded border-gray-300 text-black focus:ring-black"
+                            checked={isAnonymous}
+                            onChange={(e) => setIsAnonymous(e.target.checked)}
+                        />
+                        <label htmlFor="anonymous" className="text-sm font-medium text-slate-600 cursor-pointer select-none">
+                            Hide my username
                         </label>
-                        <div className="relative">
-                            <textarea
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                                maxLength={500}
-                                rows={5}
-                                className="w-full text-lg p-4 bg-slate-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black/10 focus:ring-0 outline-none resize-none transition-colors placeholder:text-slate-300 font-medium text-slate-800"
-                                placeholder="What's heavily on your mind?"
-                                required
-                            />
-                        </div>
                     </div>
 
                     <div className="flex justify-end gap-3 pt-2">
@@ -178,8 +187,8 @@ const CreateOpinionModal = ({ onClose, onCreated }) => {
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Eye, ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react';
+import { Eye, ThumbsUp, ThumbsDown, MessageSquare, EyeOff } from 'lucide-react';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -142,6 +142,17 @@ const OpinionCard = ({ opinion, onDelete }) => {
     const isAdmin = user && user.username === 'prem';
     const canDelete = isOwner || isAdmin;
 
+    const handleToggleAnonymity = async () => {
+        try {
+            const res = await api.patch(`/opinions/${opinion._id}/toggle-anonymity`);
+            // Update local state by forcing a reload or callback. 
+            // Ideally we'd update the opinion prop or local state, but for now we can just reload the page or use a callback if provided.
+            window.location.reload();
+        } catch (err) {
+            alert('Failed to toggle anonymity');
+        }
+    };
+
     return (
         <div ref={cardRef} className="glass-card p-4 md:p-6 mb-6 relative">
             <div className="flex justify-between items-start mb-4 border-b border-gray-100 pb-3">
@@ -157,6 +168,11 @@ const OpinionCard = ({ opinion, onDelete }) => {
                 <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold">
                     <Eye size={14} />
                     <span>{opinion.views + (viewed && !sessionStorage.getItem(`viewed_${opinion._id}_server_sync`) ? 1 : 0)}</span>
+                    {isOwner && (
+                        <button onClick={handleToggleAnonymity} className="ml-2 hover:text-black" title="Toggle Anonymity">
+                            {opinion.isAnonymous ? <EyeOff size={14} /> : <Eye size={14} />}
+                        </button>
+                    )}
                     {canDelete && (
                         <button onClick={handleDeleteOpinion} className="ml-2 text-red-500 hover:text-red-700 uppercase">
                             [Delete]
@@ -239,7 +255,9 @@ const OpinionCard = ({ opinion, onDelete }) => {
             )}
 
             <div className="mt-4 text-right md:absolute md:bottom-6 md:right-6 md:mt-0 text-xs font-mono text-slate-400 italic">
-                posted by @{opinion.userId?.username || 'user'}
+                {opinion.isAnonymous
+                    ? 'posted by @anonymous'
+                    : `posted by @${opinion.userId?.username || 'user'}`}
             </div>
         </div>
     );
