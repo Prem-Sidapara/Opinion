@@ -234,13 +234,14 @@ router.get('/:id/comments', async (req, res) => {
 // POST Comment
 router.post('/:id/comments', verifyToken, async (req, res) => {
     try {
-        const { content } = req.body;
+        const { content, parentId } = req.body;
         if (!content) return res.status(400).json({ message: 'Content required' });
 
         const comment = new Comment({
             content,
             opinionId: req.params.id,
-            userId: req.user.userId
+            userId: req.user.userId,
+            parentId: parentId || null // support nesting
         });
 
         const savedComment = await comment.save();

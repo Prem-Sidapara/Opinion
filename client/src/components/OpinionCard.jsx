@@ -3,6 +3,7 @@ import { Eye, ThumbsUp, ThumbsDown, MessageSquare, EyeOff } from 'lucide-react';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import CommentSection from './CommentSection';
 
 const OpinionCard = ({ opinion, onDelete }) => {
     const [votes, setVotes] = useState({ helpful: opinion.helpful, notHelpful: opinion.notHelpful });
@@ -11,9 +12,6 @@ const OpinionCard = ({ opinion, onDelete }) => {
     const [loading, setLoading] = useState(false);
     const [viewed, setViewed] = useState(false);
     const [showComments, setShowComments] = useState(false);
-    const [comments, setComments] = useState([]);
-    const [newComment, setNewComment] = useState('');
-    const [loadingComments, setLoadingComments] = useState(false);
 
     const cardRef = useRef(null);
     const { user } = useAuth();
@@ -97,34 +95,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
     };
 
     const toggleComments = async () => {
-        if (!showComments) {
-            setLoadingComments(true);
-            try {
-                const res = await api.get(`/opinions/${opinion._id}/comments`);
-                setComments(res.data);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoadingComments(false);
-            }
-        }
         setShowComments(!showComments);
-    };
-
-    const handlePostComment = async (e) => {
-        e.preventDefault();
-        if (!newComment.trim()) return;
-        if (!user) return navigate('/login');
-
-        try {
-            const res = await api.post(`/opinions/${opinion._id}/comments`, { content: newComment });
-            setComments([...comments, res.data]);
-            setCommentCount(prev => prev + 1);
-            setNewComment('');
-        } catch (err) {
-            console.error(err);
-            alert('Failed to post comment');
-        }
     };
 
     const handleDeleteOpinion = async () => {
@@ -208,36 +179,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
 
             {/* Comments Section */}
             {showComments && (
-                <div className="mt-6 pt-4 border-t border-gray-100">
-                    {loadingComments ? (
-                        <p className="text-xs text-gray-400">Loading...</p>
-                    ) : (
-                        <div className="space-y-3 mb-4">
-                            {comments.length === 0 && <p className="text-xs text-gray-400 italic">No comments yet.</p>}
-                            {comments.map(c => (
-                                <div key={c._id} className="bg-slate-50 p-3 text-sm">
-                                    <span className="font-bold text-black mr-2">@{c.userId?.username || 'user'}:</span>
-                                    <span className="text-slate-700">{c.content}</span>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {user && (
-                        <form onSubmit={handlePostComment} className="flex gap-2">
-                            <input
-                                type="text"
-                                value={newComment}
-                                onChange={(e) => setNewComment(e.target.value)}
-                                placeholder="Write a comment..."
-                                className="flex-1 bg-white border border-gray-300 p-2 text-sm focus:outline-none focus:border-black transition-colors"
-                            />
-                            <button type="submit" className="bg-black text-white px-4 py-2 text-xs font-bold uppercase hover:bg-zinc-800">
-                                Post
-                            </button>
-                        </form>
-                    )}
-                </div>
+                <CommentSection opinionId={opinion._id} />
             )}
 
             <div className="mt-4 text-right md:absolute md:bottom-6 md:right-6 md:mt-0 text-xs font-mono text-slate-400 italic">
