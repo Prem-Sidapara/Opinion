@@ -9,7 +9,6 @@ const OpinionSchema = new mongoose.Schema({
     topic: {
         type: String,
         required: true,
-        enum: ['lifestyle', 'tech', 'career', 'relationships', 'politics'],
     },
     views: {
         type: Number,
