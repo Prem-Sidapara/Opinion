@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Eye, ThumbsUp, ThumbsDown, MessageSquare, EyeOff } from 'lucide-react';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
@@ -16,6 +16,30 @@ const OpinionCard = ({ opinion, onDelete }) => {
     const cardRef = useRef(null);
     const { user } = useAuth();
     const navigate = useNavigate();
+
+    // Generate stable random traits for this card based on its ID
+    const randomTraits = useMemo(() => {
+        // Simple hash function to get a seed from the ID
+        const seed = opinion._id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
+        // Pseudo-random generator based on seed
+        const random = (max) => Math.floor((Math.sin(seed + 1) * 10000 % 1 + 1) * max) % max; // Ensure positive
+
+        const heights = ['min-h-[200px]', 'min-h-[250px]', 'min-h-[300px]', 'min-h-[350px]', 'min-h-[400px]'];
+        const fonts = ['text-base md:text-lg', 'text-lg md:text-xl', 'text-sm md:text-base'];
+        const fontWeights = ['font-medium', 'font-normal', 'font-semibold'];
+
+        // Determine layout based on content length + randomness
+        const isLongText = opinion.content.length > 200;
+
+        return {
+            minHeight: isLongText ? 'min-h-[300px]' : heights[random(heights.length)],
+            fontSize: fonts[random(fonts.length)],
+            fontWeight: fontWeights[random(fontWeights.length)],
+            // Randomly justify content to add more variance (start, or sometimes center for short bold texts)
+            justify: !isLongText && random(10) > 7 ? 'justify-center text-center' : 'justify-between text-left'
+        };
+    }, [opinion._id, opinion.content.length]);
 
     useEffect(() => {
         setVotes({ helpful: opinion.helpful, notHelpful: opinion.notHelpful });
@@ -116,8 +140,11 @@ const OpinionCard = ({ opinion, onDelete }) => {
 
 
     return (
-        <div ref={cardRef} className="glass-card p-5 mb-6 relative break-inside-avoid hover:scale-[1.01] transition-transform duration-300 ease-out border border-white/40 shadow-xl bg-white/70 backdrop-blur-md rounded-2xl">
-            <div className="flex justify-between items-start mb-4 border-b border-gray-100 pb-3">
+        <div
+            ref={cardRef}
+            className={`glass-card p-6 mb-6 relative break-inside-avoid hover:scale-[1.01] transition-transform duration-300 ease-out border border-white/40 shadow-xl bg-white/70 backdrop-blur-md rounded-2xl flex flex-col ${randomTraits.justify} ${randomTraits.minHeight}`}
+        >
+            <div className={`flex justify-between items-start mb-4 border-b border-gray-100 pb-3 ${randomTraits.justify.includes('center') ? 'w-full' : ''}`}>
                 <span className={`px-2 py-0.5 text-xs font-bold uppercase tracking-widest ${opinion.topic === 'lifestyle' ? 'bg-emerald-100 text-emerald-800' :
                     opinion.topic === 'tech' ? 'bg-indigo-100 text-indigo-800' :
                         opinion.topic === 'career' ? 'bg-amber-100 text-amber-800' :
@@ -138,7 +165,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
                 </div>
             </div>
 
-            <p className="text-slate-800 text-base md:text-lg leading-7 font-medium mb-6">
+            <p className={`text-slate-800 leading-relaxed mb-6 ${randomTraits.fontSize} ${randomTraits.fontWeight} ${randomTraits.justify.includes('center') ? 'italic' : ''}`}>
                 {opinion.content}
             </p>
 
