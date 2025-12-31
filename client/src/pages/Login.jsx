@@ -29,7 +29,9 @@ const Login = () => {
 
     const handleGoogleSuccess = async (credentialResponse) => {
         const data = await googleLogin(credentialResponse.credential);
+        console.log("Google Login Data:", data);
         if (data) {
+            console.log("isNewUser check:", data.isNewUser);
             if (data.isNewUser) {
                 setIsGoogleSignup(true);
             } else {
