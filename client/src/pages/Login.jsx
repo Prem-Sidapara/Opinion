@@ -13,9 +13,19 @@ const Login = () => {
     const [isGoogleSignup, setIsGoogleSignup] = useState(false);
     const [username, setUsername] = useState('');
 
-    const { login, googleLogin, updateUsername, error } = useAuth();
+    const { login, googleLogin, updateUsername, error, user } = useAuth();
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            if (user.isSetupComplete === false) {
+                setIsGoogleSignup(true);
+            } else {
+                navigate('/');
+            }
+        }
+    }, [user, navigate]);
 
     const handlePasswordLogin = async (e) => {
         e.preventDefault();
@@ -30,14 +40,6 @@ const Login = () => {
     const handleGoogleSuccess = async (credentialResponse) => {
         const data = await googleLogin(credentialResponse.credential);
         console.log("Google Login Data:", data);
-        if (data) {
-            console.log("isNewUser check:", data.isNewUser);
-            if (data.isNewUser) {
-                setIsGoogleSignup(true);
-            } else {
-                navigate('/');
-            }
-        }
     };
 
     const handleUpdateUsername = async (e) => {
