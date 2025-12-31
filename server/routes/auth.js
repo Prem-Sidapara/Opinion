@@ -8,6 +8,10 @@ const crypto = require('crypto');
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client('702970470822-i41gqbsksutqktni6iu6pcs2oll3lh52.apps.googleusercontent.com');
 
+const escapeRegex = (text) => {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+};
+
 const verifyToken = (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
     if (!token) return res.status(401).json({ message: 'No token' });
@@ -30,13 +34,14 @@ router.post('/google', async (req, res) => {
             audience: '702970470822-i41gqbsksutqktni6iu6pcs2oll3lh52.apps.googleusercontent.com',
         });
         const { email, name, picture } = ticket.getPayload();
-        console.log(`[Google Login] Attempt for: ${email}`);
+        console.log(`[Google Login] Attempt for: '${email}'`);
 
-        // Case-insensitive lookup
-        let user = await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
+        // Case-insensitive lookup with escaped regex
+        const emailRegex = new RegExp(`^${escapeRegex(email)}$`, 'i');
+        let user = await User.findOne({ email: { $regex: emailRegex } });
 
         if (!user) {
-            console.log(`[Google Login] User NOT found. Creating new user...`);
+            console.log(`[Google Login] User NOT found for regex: ${emailRegex}. Creating new user...`);
             // Create new user (Pending Setup)
             const randomPassword = crypto.randomBytes(16).toString('hex');
             const salt = await bcrypt.genSalt(10);
@@ -51,8 +56,9 @@ router.post('/google', async (req, res) => {
             // Ensure boolean
             if (user.isSetupComplete !== false) user.isSetupComplete = false;
             await user.save();
+            console.log(`[Google Login] New User Created: ${user.email} (isSetupComplete: ${user.isSetupComplete})`);
         } else {
-            console.log(`[Google Login] User FOUND: ${user.username} (Setup Complete: ${user.isSetupComplete})`);
+            console.log(`[Google Login] User FOUND: '${user.email}' (Username: ${user.username}, Setup Complete: ${user.isSetupComplete})`);
         }
 
         const jwtToken = jwt.sign({ userId: user._id, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -112,7 +118,7 @@ router.post('/register', async (req, res) => {
 
     try {
         // Check existing (case-insensitive)
-        let user = await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
+        let user = await User.findOne({ email: { $regex: new RegExp(`^${escapeRegex(email)}$`, 'i') } });
 
         if (user) {
             return res.status(400).json({ message: 'User already exists.' });
@@ -145,7 +151,7 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const user = await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
+        const user = await User.findOne({ email: { $regex: new RegExp(`^${escapeRegex(email)}$`, 'i') } });
 
         // Check if user exists AND has a password
         if (!user || !user.password) {
