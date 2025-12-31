@@ -80,8 +80,8 @@ const AdminPanel = () => {
                 </h1>
             </div>
 
-            <div className="glass rounded-xl overflow-hidden p-6">
-                <h2 className="text-lg font-bold text-white mb-4 uppercase tracking-wider opacity-70">
+            <div className="glass bg-red-100 rounded-xl overflow-hidden p-6">
+                <h2 className="text-lg font-bold text-blue-600/50 dark:text-sky-400/50 mb-4 uppercase tracking-wider opacity-70">
                     Registered Users ({users.length})
                 </h2>
 
@@ -113,7 +113,7 @@ const AdminPanel = () => {
                                     <td className="p-3 text-center">
                                         <button
                                             onClick={() => handleViewOpinions(u)}
-                                            className="text-white hover:text-blue-400 font-bold border-b border-white/20 hover:border-blue-400"
+                                            className="text-black hover:text-blue-400 font-bold border-b border-white/20 hover:border-blue-400"
                                         >
                                             {u.opinionsCount || 0}
                                         </button>
