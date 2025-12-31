@@ -103,7 +103,7 @@ const Feed = () => {
 
             {/* Controls */}
             <div className="flex flex-col gap-6 mb-10 sticky top-4 z-10 glass-card p-4 rounded-xl backdrop-blur-xl bg-white/10 border border-white/20 shadow-lg">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-transparent">
                     {/* Topics */}
                     <div className="flex flex-wrap gap-2 items-center justify-center md:justify-start">
                         {topics.map(topic => (
