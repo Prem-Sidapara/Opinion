@@ -116,7 +116,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
 
 
     return (
-        <div ref={cardRef} className="glass-card p-4 md:p-6 mb-6 relative">
+        <div ref={cardRef} className="glass-card p-5 mb-6 relative break-inside-avoid hover:scale-[1.01] transition-transform duration-300 ease-out border border-white/40 shadow-xl bg-white/70 backdrop-blur-md rounded-2xl">
             <div className="flex justify-between items-start mb-4 border-b border-gray-100 pb-3">
                 <span className={`px-2 py-0.5 text-xs font-bold uppercase tracking-widest ${opinion.topic === 'lifestyle' ? 'bg-emerald-100 text-emerald-800' :
                     opinion.topic === 'tech' ? 'bg-indigo-100 text-indigo-800' :

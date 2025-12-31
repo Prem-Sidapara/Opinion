@@ -83,18 +83,18 @@ const Feed = () => {
     const isAdmin = user && user.username === 'prem';
 
     return (
-        <div className="max-w-3xl mx-auto px-4 py-4 md:py-8">
+        <div className="max-w-[1600px] mx-auto px-4 py-6 md:py-10">
             {/* Header */}
             <div className="border-b border-white/20 pb-6 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tighter mb-1">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tighter mb-2">
                         Opinions.
                     </h1>
-                    <p className="text-slate-400 font-medium">Unfiltered thoughts.</p>
+                    <p className="text-slate-300 font-medium text-lg">Unfiltered thoughts, curated for you.</p>
                 </div>
                 <button
                     onClick={handlePostClick}
-                    className="bg-white text-black px-4 py-2 md:px-6 md:py-3 font-bold hover:bg-slate-200 transition-colors shadow-lg"
+                    className="bg-white text-black px-6 py-3 font-bold hover:bg-slate-200 transition-colors shadow-lg rounded-full"
                 >
                     + Ask/Post Opinion
                 </button>
@@ -102,71 +102,71 @@ const Feed = () => {
 
 
             {/* Controls */}
-            <div className="flex flex-col gap-6 mb-8">
-                {/* Topics */}
-                <div className="flex flex-wrap gap-2 items-center">
-                    {topics.map(topic => (
+            <div className="flex flex-col gap-6 mb-10 sticky top-4 z-10 glass-card p-4 rounded-xl backdrop-blur-xl bg-white/10 border border-white/20 shadow-lg">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                    {/* Topics */}
+                    <div className="flex flex-wrap gap-2 items-center justify-center md:justify-start">
+                        {topics.map(topic => (
+                            <button
+                                key={topic}
+                                onClick={() => setActiveTopic(topic)}
+                                className={`px-4 py-2 text-xs font-bold uppercase transition-all rounded-full ${activeTopic === topic
+                                    ? 'bg-red-600 text-white shadow-md transform scale-105'
+                                    : 'bg-black/20 text-white hover:bg-white/20 backdrop-blur-sm'
+                                    }`}
+                            >
+                                {topic}
+                            </button>
+                        ))}
+                        {/* Add Topic Button */}
                         <button
-                            key={topic}
-                            onClick={() => setActiveTopic(topic)}
-                            className={`px-3 py-1.5 md:px-4 md:py-2 text-xs font-bold uppercase transition-all ${activeTopic === topic
-                                ? 'bg-red-600 text-white shadow-lg'
-                                : 'bg-white text-black hover:bg-slate-200'
-                                }`}
+                            onClick={handleAddTopic}
+                            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 text-white text-xs font-bold uppercase hover:bg-white/20"
+                            title="Add Topic"
                         >
-                            {topic}
+                            +
                         </button>
-                    ))}
-                    {/* Add Topic Button */}
-                    <button
-                        onClick={handleAddTopic}
-                        className="px-3 py-2 bg-zinc-800 text-white text-xs font-bold uppercase hover:bg-black"
-                        title="Add Topic"
-                    >
-                        +
-                    </button>
-                </div>
+                    </div>
 
-                {/* Sort */}
-                <div className="flex justify-between items-center border-t border-b border-white/10 py-3">
-                    <span className="text-xs font-bold uppercase text-slate-400">
-                        {opinions.length} ENTRIES
-                    </span>
-                    <div className="flex gap-4">
+                    {/* Sort */}
+                    <div className="flex gap-6 items-center">
                         <button
                             onClick={() => setSortBy('views')}
-                            className={`uppercase text-xs font-bold flex items-center gap-1 ${sortBy === 'views' ? 'text-white underline decoration-red-600 decoration-2' : 'text-slate-400 hover:text-white'
+                            className={`uppercase text-xs font-bold flex items-center gap-1.5 transition-colors ${sortBy === 'views' ? 'text-white' : 'text-slate-400 hover:text-white'
                                 }`}
                         >
-                            <TrendingUp size={14} />
+                            <TrendingUp size={16} className={sortBy === 'views' ? 'text-red-500' : ''} />
                             Most Viewed
                         </button>
                         <button
                             onClick={() => setSortBy('latest')}
-                            className={`uppercase text-xs font-bold flex items-center gap-1 ${sortBy === 'latest' ? 'text-white underline decoration-red-600 decoration-2' : 'text-slate-400 hover:text-white'
+                            className={`uppercase text-xs font-bold flex items-center gap-1.5 transition-colors ${sortBy === 'latest' ? 'text-white' : 'text-slate-400 hover:text-white'
                                 }`}
                         >
-                            <Clock size={14} />
+                            <Clock size={16} className={sortBy === 'latest' ? 'text-red-500' : ''} />
                             Latest
                         </button>
                     </div>
                 </div>
             </div>
+
             {/* Feed */}
-            <div className="space-y-6 min-h-[50vh]">
+            <div className="min-h-[50vh]">
                 {loading ? (
-                    <div className="py-20 text-center font-bold animate-pulse text-white">
-                        LOADING DATA...
+                    <div className="py-20 text-center font-bold animate-pulse text-white text-xl tracking-widest">
+                        LOADING FEED...
                     </div>
                 ) : opinions.length === 0 ? (
-                    <div className="py-20 text-center border-2 border-dashed border-gray-300 text-white/50">
-                        <p className="text-xl font-bold mb-2">NO DATA</p>
-                        <p className="text-sm">Be the first to post in {activeTopic.toUpperCase()}.</p>
+                    <div className="py-32 text-center border-2 border-dashed border-white/20 rounded-3xl text-white/50">
+                        <p className="text-2xl font-bold mb-2">NO DATA</p>
+                        <p className="text-base">Be the first to post in {activeTopic.toUpperCase()}.</p>
                     </div>
                 ) : (
-                    opinions.map(op => (
-                        <OpinionCard key={op._id} opinion={op} onDelete={handleDelete} />
-                    ))
+                    <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
+                        {opinions.map(op => (
+                            <OpinionCard key={op._id} opinion={op} onDelete={handleDelete} />
+                        ))}
+                    </div>
                 )}
             </div>
 
