@@ -123,14 +123,71 @@ const Feed = () => {
     const isAdmin = user && user.username === 'prem';
 
     return (
-        <div className="max-w-[1600px] mx-auto px-4 py-6 md:py-10">
+        <div className="max-w-[1600px] mx-auto px-4  md:py-10">
             {/* Header */}
             <div className="border-b border-white/20 pb-6 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tighter mb-2">
-                        Opinions.
-                    </h1>
-                    <p className="text-slate-300 font-medium text-lg">Unfiltered thoughts, curated for you.</p>
+                    {/* <p className="text-slate-300 font-medium text-lg">Anonymously share your thoughts. </p> */}
+                    <svg width="200" height="123" viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#2ECC71">
+                            <animate
+                                attributeName="d"
+                                dur="3.6s"
+                                repeatCount="indefinite"
+                                calcMode="linear"
+                                values="
+                                M70 150
+                                C35 70, 170 40, 270 60
+                                C380 70, 520 40, 500 160
+                                C480 290, 360 270, 260 245
+                                C210 235, 215 300, 140 260
+                                C80 230, 120 190, 70 150Z;
+
+                                M75 148
+                                C40 80, 175 45, 265 65
+                                C420 20, 560 120, 480 210
+                                C440 320, 350 300, 245 260
+                                C205 240, 215 290, 150 255
+                                C95 225, 125 195, 75 148Z;
+
+                                M65 155
+                                C45 85, 180 50, 260 70
+                                C390 -20, 600 100, 520 240
+                                C470 330, 340 290, 255 275
+                                C220 260, 230 305, 150 265
+                                C100 235, 130 200, 65 155Z;
+
+                                M72 150
+                                C38 75, 175 45, 270 65
+                                C430 10, 560 90, 500 200
+                                C460 300, 360 275, 260 255
+                                C215 245, 220 295, 145 260
+                                C90 230, 125 195, 72 150Z;
+
+                                M70 150
+                                C35 70, 170 40, 270 60
+                                C380 70, 520 40, 500 160
+                                C480 290, 360 270, 260 245
+                                C210 235, 215 300, 140 260
+                                C80 230, 120 190, 70 150Z
+                            "
+                            />
+                        </path>
+                        <text
+                            x="260"
+                            y="175"
+                            text-anchor="middle"
+                            fill="#ffffff"
+                            font-size="52"
+                            font-family="Segoe Script, Pacifico, cursive"
+                            transform="rotate(-7 260 175)"
+                        >
+                            Anonymous
+                        </text>
+
+                    </svg>
+
+
                 </div>
                 <button
                     onClick={handlePostClick}

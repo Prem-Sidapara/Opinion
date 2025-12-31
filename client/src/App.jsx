@@ -29,10 +29,10 @@ const NavBar = () => {
   const { user } = useAuth();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-black/10 h-16">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#D25353] backdrop-blur-sm border-b border-black/10 h-12">
       <div className="max-w-3xl mx-auto px-4 h-full flex items-center justify-between">
         <Link to="/" className="font-black text-xl tracking-tighter text-black uppercase hover:underline">
-          Opinions.
+          Opinions
         </Link>
         <div className="flex items-center gap-4">
           {user && user.username === 'prem' && (
@@ -64,7 +64,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <div className="min-h-screen pt-20">
+        <div className="min-h-screen ">
           <NavBar />
           <main>
             <Routes>
