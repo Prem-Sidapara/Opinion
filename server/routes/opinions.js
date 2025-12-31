@@ -108,10 +108,14 @@ router.post('/', verifyToken, async (req, res) => {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
-    // Check Limit by UserID
-    const countById = await Opinion.countDocuments({ userId, createdAt: { $gte: startOfDay } });
-    if (countById >= 4) {
-        return res.status(429).json({ message: 'Daily limit reached (4 opinions/day)' });
+    // Check Limit by UserID (Exempt Admin)
+    const isAdmin = req.user.email === 'pprem1644@gmail.com';
+
+    if (!isAdmin) {
+        const countById = await Opinion.countDocuments({ userId, createdAt: { $gte: startOfDay } });
+        if (countById >= 4) {
+            return res.status(429).json({ message: 'Daily limit reached (4 opinions/day)' });
+        }
     }
 
     const opinion = new Opinion({
