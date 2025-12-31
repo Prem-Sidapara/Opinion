@@ -87,8 +87,8 @@ const AdminPanel = () => {
 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
-                        <thead className="underline text-black">
-                            <tr className="border-b border-white/10 text-xs font-bold uppercase text-slate-400 tracking-wider">
+                        <thead className="underline text-black underline-offset-2">
+                            <tr className="border-b border-white/10 text-xs font-bold uppercase text-black tracking-wider">
                                 <th className="p-3">Username</th>
                                 <th className="p-3">Email</th>
                                 <th className="p-3 text-center">Opinions</th>
@@ -96,7 +96,7 @@ const AdminPanel = () => {
                                 <th className="p-3 text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody className="text-sm font-medium text-slate-200">
+                        <tbody className="text-sm font-medium text-black">
                             {users.map((u) => (
                                 <tr key={u._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                                     <td className="p-3">
@@ -118,14 +118,14 @@ const AdminPanel = () => {
                                             {u.opinionsCount || 0}
                                         </button>
                                     </td>
-                                    <td className="p-3 text-slate-500 text-xs">
+                                    <td className="p-3 text-black text-xs">
                                         {new Date(u.createdAt).toLocaleDateString()}
                                     </td>
                                     <td className="p-3 text-right">
                                         {u.username !== 'prem' && (
                                             <button
                                                 onClick={() => handleDelete(u._id, u.username)}
-                                                className="text-slate-500 hover:text-red-500 transition-colors p-2"
+                                                className="text-black hover:text-red-500 transition-colors p-2"
                                                 title="Delete User"
                                             >
                                                 <Trash2 size={16} />
@@ -147,7 +147,7 @@ const AdminPanel = () => {
                             <h3 className="text-xl font-bold text-white">
                                 Opinions by @{selectedUser.username}
                             </h3>
-                            <button onClick={closeOpinions} className="text-slate-400 hover:text-white">
+                            <button onClick={closeOpinions} className="text-black hover:text-white">
                                 <X size={24} />
                             </button>
                         </div>
