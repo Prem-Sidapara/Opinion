@@ -32,7 +32,8 @@ router.post('/google', async (req, res) => {
         const { email, name, picture } = ticket.getPayload();
         console.log(`[Google Login] Attempt for: ${email}`);
 
-        let user = await User.findOne({ email });
+        // Case-insensitive lookup
+        let user = await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
 
         if (!user) {
             console.log(`[Google Login] User NOT found. Creating new user...`);
@@ -97,7 +98,8 @@ router.put('/update-username', verifyToken, async (req, res) => {
 
 // Register
 router.post('/register', async (req, res) => {
-    const { email, password, username } = req.body;
+    const { password, username } = req.body;
+    const email = req.body.email?.toLowerCase();
 
     // Strict Gmail Check
     if (!email || !email.endsWith('@gmail.com')) {
@@ -109,8 +111,8 @@ router.post('/register', async (req, res) => {
     }
 
     try {
-        // Check existing
-        let user = await User.findOne({ email });
+        // Check existing (case-insensitive)
+        let user = await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
 
         if (user) {
             return res.status(400).json({ message: 'User already exists.' });
@@ -143,7 +145,7 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
 
         // Check if user exists AND has a password
         if (!user || !user.password) {
