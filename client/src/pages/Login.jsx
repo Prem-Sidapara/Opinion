@@ -19,7 +19,8 @@ const Login = () => {
 
     useEffect(() => {
         if (user) {
-            if (user.isSetupComplete === false) {
+            // Check if setup is incomplete (false or undefined)
+            if (!user.isSetupComplete) {
                 setIsGoogleSignup(true);
             } else {
                 navigate('/');
