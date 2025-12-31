@@ -60,10 +60,12 @@ router.post('/google', async (req, res) => {
             console.log(`[Google Login] User FOUND: '${user.email}' (Username: ${user.username}, Setup Complete: ${user.isSetupComplete})`);
 
             // Auto-fix for stuck users (Created > 2 mins ago but still incomplete)
-            // This ensures existing users don't get stuck in a loop, while new users (just created) still get to pick a username.
+            // Handle missing createdAt by treating as old (0)
+            const createdTime = user.createdAt ? new Date(user.createdAt).getTime() : 0;
             const TWO_MINUTES = 2 * 60 * 1000;
-            if (!user.isSetupComplete && (Date.now() - new Date(user.createdAt).getTime() > TWO_MINUTES)) {
-                console.log(`[Google Login] Auto-fixing stuck user: ${user.email}`);
+
+            if (!user.isSetupComplete && (Date.now() - createdTime > TWO_MINUTES)) {
+                console.log(`[Google Login] Auto-fixing stuck user: ${user.email} (Created: ${user.createdAt})`);
                 user.isSetupComplete = true;
                 await user.save();
             }
