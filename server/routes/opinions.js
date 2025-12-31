@@ -28,8 +28,12 @@ const getUserVote = (opinion, userId) => {
 
 // GET Options (Public Feed)
 router.get('/', async (req, res) => {
-    const { topic, sort } = req.query;
-    const filter = topic ? { topic } : {};
+    const { topic, sort, userId: filterUserId } = req.query;
+    const filter = {};
+    if (topic) filter.topic = topic;
+
+    // Admin Filtering by User (allows seeing all posts for a user)
+    if (filterUserId) filter.userId = filterUserId;
     let sortOption = { views: -1 };
 
     if (sort === 'latest') {

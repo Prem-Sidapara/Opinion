@@ -202,15 +202,25 @@ router.get('/me', async (req, res) => {
 });
 
 // ADMIN: Get All Users
+const Opinion = require('../models/Opinion'); // Ensure Opinion is required at top, or require inline
+
+// ADMIN: Get All Users
 router.get('/users', verifyToken, async (req, res) => {
     try {
         const admin = await User.findById(req.userId);
-        if (admin.username !== 'prem') {
+        if (admin.username !== 'prem' && admin.email !== 'pprem1644@gmail.com') {
             return res.status(403).json({ message: 'Access denied: Admins only' });
         }
 
         const users = await User.find().select('-password -otp -otpExpires').sort({ createdAt: -1 });
-        res.json(users);
+
+        // Populate opinion counts
+        const usersWithCounts = await Promise.all(users.map(async (u) => {
+            const count = await (require('../models/Opinion')).countDocuments({ userId: u._id });
+            return { ...u.toObject(), opinionsCount: count };
+        }));
+
+        res.json(usersWithCounts);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
