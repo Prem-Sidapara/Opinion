@@ -83,22 +83,23 @@ const Feed = () => {
     const isAdmin = user && user.username === 'prem';
 
     return (
-        <div className="max-w-3xl mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto px-4 py-4 md:py-8">
             {/* Header */}
             <div className="border-b border-white/20 pb-6 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-4xl font-extrabold text-white tracking-tighter mb-1">
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tighter mb-1">
                         Opinions.
                     </h1>
                     <p className="text-slate-400 font-medium">Unfiltered thoughts.</p>
                 </div>
                 <button
                     onClick={handlePostClick}
-                    className="bg-white text-black px-6 py-3 font-bold hover:bg-slate-200 transition-colors shadow-lg"
+                    className="bg-white text-black px-4 py-2 md:px-6 md:py-3 font-bold hover:bg-slate-200 transition-colors shadow-lg"
                 >
                     + Ask/Post Opinion
                 </button>
             </div>
+
 
             {/* Controls */}
             <div className="flex flex-col gap-6 mb-8">
@@ -108,7 +109,7 @@ const Feed = () => {
                         <button
                             key={topic}
                             onClick={() => setActiveTopic(topic)}
-                            className={`px-4 py-2 text-xs font-bold uppercase transition-all ${activeTopic === topic
+                            className={`px-3 py-1.5 md:px-4 md:py-2 text-xs font-bold uppercase transition-all ${activeTopic === topic
                                 ? 'bg-red-600 text-white shadow-lg'
                                 : 'bg-white text-black hover:bg-slate-200'
                                 }`}
