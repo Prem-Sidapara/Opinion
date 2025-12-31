@@ -87,7 +87,7 @@ router.put('/update-username', verifyToken, async (req, res) => {
 
     try {
         const existing = await User.findOne({ username });
-        if (existing) return res.status(400).json({ message: 'Username already taken' });
+        if (existing && existing._id.toString() !== req.userId) return res.status(400).json({ message: 'Username already taken' });
 
         const user = await User.findById(req.userId);
         if (!user) return res.status(404).json({ message: 'User not found' });
