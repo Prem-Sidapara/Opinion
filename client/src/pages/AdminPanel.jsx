@@ -81,13 +81,13 @@ const AdminPanel = () => {
             </div>
 
             <div className="glass bg-red-100 rounded-xl overflow-hidden p-6">
-                <h2 className="text-lg font-bold text-blue-600/50 dark:text-sky-400/50 mb-4 uppercase tracking-wider opacity-70">
+                <h2 className="text-lg font-bold text-black mb-4 uppercase tracking-wider opacity-70">
                     Registered Users ({users.length})
                 </h2>
 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
-                        <thead>
+                        <thead className="underline ">
                             <tr className="border-b border-white/10 text-xs font-bold uppercase text-slate-400 tracking-wider">
                                 <th className="p-3">Username</th>
                                 <th className="p-3">Email</th>
