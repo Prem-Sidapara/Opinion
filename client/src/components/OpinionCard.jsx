@@ -173,7 +173,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
                 <button
                     onClick={() => handleVote('helpful')}
                     disabled={loading}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase transition-all rounded-full shadow-sm border ${userVote === 'helpful'
+                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase transition-all rounded-md shadow-sm border ${userVote === 'helpful'
                         ? 'bg-emerald-600 text-white border-emerald-600'
                         : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
                         }`}
@@ -185,7 +185,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
                 <button
                     onClick={() => handleVote('notHelpful')}
                     disabled={loading}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase transition-all rounded-full shadow-sm border ${userVote === 'notHelpful'
+                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase transition-all rounded-md shadow-sm border ${userVote === 'notHelpful'
                         ? 'bg-rose-600 text-white border-rose-600'
                         : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
                         }`}
@@ -196,7 +196,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
 
                 <button
                     onClick={toggleComments}
-                    className="px-3 py-1.5 text-xs font-bold uppercase bg-white border border-slate-200 rounded-full shadow-sm hover:bg-slate-50 text-slate-500 flex items-center gap-1.5 transition-all"
+                    className="px-3 py-1.5 text-xs font-bold uppercase bg-white border border-slate-200 rounded-md shadow-sm hover:bg-slate-50 text-slate-500 flex items-center gap-1.5 transition-all"
                     title="Comments"
                 >
                     <MessageSquare size={12} />
