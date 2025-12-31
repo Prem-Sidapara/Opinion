@@ -125,10 +125,10 @@ const Feed = () => {
     return (
         <div className="max-w-[1600px] mx-auto px-4  md:py-10">
             {/* Header */}
-            <div className="border-b border-white/20 pb-6 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="border-b border-white/20 pb-6 mb-8 pt-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     {/* <p className="text-slate-300 font-medium text-lg">Anonymously share your thoughts. </p> */}
-                    <svg width="200" height="123" viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg">
+                    {/* <svg width="200" height="123" viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg">
                         <path fill="#2ECC71">
                             <animate
                                 attributeName="d"
@@ -185,7 +185,7 @@ const Feed = () => {
                             Anonymous
                         </text>
 
-                    </svg>
+                    </svg> */}
 
 
                 </div>
