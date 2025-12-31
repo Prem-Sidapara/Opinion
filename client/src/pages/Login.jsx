@@ -19,10 +19,14 @@ const Login = () => {
 
     useEffect(() => {
         if (user) {
-            // Check if setup is incomplete (false or undefined)
-            if (!user.isSetupComplete) {
+            console.log("Login Page Effect - User:", user);
+            const incomplete = !user.isSetupComplete; // using robust check
+
+            if (incomplete) {
+                console.log("Setup Incomplete - Showing Form");
                 setIsGoogleSignup(true);
             } else {
+                console.log("Setup Complete - Redirecting");
                 navigate('/');
             }
         }
@@ -69,6 +73,11 @@ const Login = () => {
                         {error}
                     </div>
                 )}
+
+                {/* DEBUG OVERLAY */}
+                <div className="absolute top-0 left-0 bg-black/80 text-white p-2 text-xs font-mono z-50 pointer-events-none">
+                    DEBUG: {JSON.stringify({ user, isGoogleSignup }, null, 2)}
+                </div>
 
                 {!isGoogleSignup ? (
                     <>
