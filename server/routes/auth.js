@@ -88,7 +88,8 @@ router.post('/google', async (req, res) => {
             userId: user._id,
             username: user.username,
             email: user.email,
-            isNewUser: !user.isSetupComplete
+            isNewUser: !user.isSetupComplete,
+            isSetupComplete: user.isSetupComplete
         });
 
     } catch (err) {
