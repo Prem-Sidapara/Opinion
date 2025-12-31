@@ -77,7 +77,7 @@ router.post('/google', async (req, res) => {
             }
         }
 
-        const jwtToken = jwt.sign({ userId: user._id, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        const jwtToken = jwt.sign({ userId: user._id, email: user.email, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
         console.log(`[Google Login] Final Check - user.isSetupComplete: ${user.isSetupComplete}`);
         console.log(`[Google Login] Returning isNewUser: ${!user.isSetupComplete}`);
@@ -155,7 +155,7 @@ router.post('/register', async (req, res) => {
         await user.save();
 
         // Generate Token
-        const token = jwt.sign({ userId: user._id, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        const token = jwt.sign({ userId: user._id, email: user.email, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
         res.status(201).json({ token, userId: user._id, username: user.username, email: user.email });
     } catch (err) {
@@ -178,7 +178,7 @@ router.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-        const token = jwt.sign({ userId: user._id, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        const token = jwt.sign({ userId: user._id, email: user.email, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
         res.json({ token, userId: user._id, username: user.username, email: user.email });
     } catch (err) {

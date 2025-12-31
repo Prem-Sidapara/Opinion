@@ -139,7 +139,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
 
     // Calculate permissions
     const isOwner = user && opinion.userId && (user._id === opinion.userId._id || user.userId === opinion.userId._id); // handle possible populate variations
-    const isAdmin = user && user.username === 'prem';
+    const isAdmin = user && (user.username === 'prem' || user.email === 'pprem1644@gmail.com');
     const canDelete = isOwner || isAdmin;
 
 

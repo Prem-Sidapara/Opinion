@@ -41,12 +41,16 @@ router.get('/', async (req, res) => {
        Since we moved to proper auth, we can trust the token header if present.
     */
     let userId = null;
+    let isAdmin = false;
     const authHeader = req.headers['authorization'];
     if (authHeader) {
         try {
             const token = authHeader.split(' ')[1];
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             userId = decoded.userId;
+            if (decoded.email === 'pprem1644@gmail.com') {
+                isAdmin = true;
+            }
         } catch (e) { }
     }
 
@@ -59,7 +63,7 @@ router.get('/', async (req, res) => {
 
         const opinionsWithVote = opinions.map(op => {
             const opObj = op.toObject();
-            if (opObj.isAnonymous) {
+            if (opObj.isAnonymous && !isAdmin) {
                 opObj.userId = null;
             }
             if (userId) {
@@ -196,11 +200,11 @@ router.delete('/:id', verifyToken, async (req, res) => {
         const requestor = await (require('../models/User')).findById(req.user.userId);
         const isAdmin = requestor && requestor.username === 'prem';
 
-        // Check Permissions: Owner OR Admin (@prem)
+        // Check Permissions: Owner OR Admin (@prem or pprem1644@gmail.com)
         // Handle case where opinion.userId is null (if user was deleted)
         const isOwner = opinion.userId && opinion.userId._id.toString() === req.user.userId;
 
-        if (!isOwner && !isAdmin) {
+        if (!isOwner && !isAdmin && requestor?.email !== 'pprem1644@gmail.com') {
             return res.status(403).json({ message: 'You are not authorized to delete this opinion' });
         }
 
