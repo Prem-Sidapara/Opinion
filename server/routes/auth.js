@@ -63,9 +63,13 @@ router.post('/google', async (req, res) => {
             // Handle missing createdAt by treating as old (0)
             const createdTime = user.createdAt ? new Date(user.createdAt).getTime() : 0;
             const TWO_MINUTES = 2 * 60 * 1000;
+            const isOldAccount = (Date.now() - createdTime > TWO_MINUTES);
 
-            if (!user.isSetupComplete && (Date.now() - createdTime > TWO_MINUTES)) {
-                console.log(`[Google Login] Auto-fixing stuck user: ${user.email} (Created: ${user.createdAt})`);
+            // Heuristic for manual usernames (no trailing digits)
+            const isManualUsername = user.username && !/\d+$/.test(user.username);
+
+            if (!user.isSetupComplete && (isOldAccount || isManualUsername)) {
+                console.error(`[Google Login] Auto-fixing stuck user: ${user.email} (Old: ${isOldAccount}, Manual: ${isManualUsername})`);
                 user.isSetupComplete = true;
                 await user.save();
             }
