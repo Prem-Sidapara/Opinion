@@ -259,7 +259,7 @@ const Feed = () => {
                         <p className="text-base">Be the first to post in {activeTopic.toUpperCase()}.</p>
                     </div>
                 ) : (
-                    <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-3 gap-6 space-y-2">
+                    <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-3 gap-6 space-y-6">
                         {opinions.map(op => (
                             <OpinionCard key={op._id} opinion={op} onDelete={handleDelete} />
                         ))}

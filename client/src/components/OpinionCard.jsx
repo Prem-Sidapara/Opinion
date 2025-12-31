@@ -25,7 +25,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
         // Pseudo-random generator based on seed
         const random = (max) => Math.floor((Math.sin(seed + 1) * 10000 % 1 + 1) * max) % max; // Ensure positive
 
-        const heights = ['min-h-[200px]', 'min-h-[250px]', 'min-h-[300px]', 'min-h-[350px]', 'min-h-[400px]'];
+        const heights = ['min-h-[120px]', 'min-h-[140px]', 'min-h-[160px]', 'min-h-[180px]'];
         const fonts = ['text-base md:text-lg', 'text-lg md:text-xl', 'text-sm md:text-base'];
         const fontWeights = ['font-medium', 'font-normal', 'font-semibold'];
 
@@ -43,7 +43,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
         const isLongText = opinion.content.length > 200;
 
         return {
-            minHeight: isLongText ? 'min-h-[300px]' : heights[random(heights.length)],
+            minHeight: isLongText ? 'min-h-[200px]' : heights[random(heights.length)],
             fontSize: fonts[random(fonts.length)],
             fontWeight: fontWeights[random(fontWeights.length)],
             color: colors[random(colors.length)],
