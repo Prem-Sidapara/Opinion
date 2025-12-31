@@ -13,8 +13,21 @@ const Feed = () => {
     const [topics, setTopics] = useState([]);
     const [sortBy, setSortBy] = useState('views');
     const [showModal, setShowModal] = useState(false);
+
+    // Pagination state
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [isFetchingMore, setIsFetchingMore] = useState(false);
+
     const { user } = useAuth();
     const navigate = useNavigate();
+
+    // Reset pagination when filter/sort changes
+    useEffect(() => {
+        setOpinions([]);
+        setPage(1);
+        setHasMore(true);
+    }, [activeTopic, sortBy]);
 
     const fetchTopics = async () => {
         try {
@@ -32,18 +45,28 @@ const Feed = () => {
         }
     };
 
-    const fetchOpinions = async () => {
-        setLoading(true);
+    const fetchOpinions = async (pageNum = 1) => {
+        if (pageNum === 1) setLoading(true);
+        else setIsFetchingMore(true);
+
         try {
-            const params = { sort: sortBy };
+            const params = { sort: sortBy, page: pageNum, limit: 12 }; // Fetch 12 at a time
             if (activeTopic !== 'all') params.topic = activeTopic;
 
             const res = await api.get('/opinions', { params });
-            setOpinions(res.data);
+
+            if (res.data.length === 0) {
+                setHasMore(false);
+            } else {
+                setOpinions(prev => pageNum === 1 ? res.data : [...prev, ...res.data]);
+                // If we got fewer items than limit, no more pages
+                if (res.data.length < 12) setHasMore(false);
+            }
         } catch (err) {
             console.error('Failed to fetch opinions', err);
         } finally {
             setLoading(false);
+            setIsFetchingMore(false);
         }
     };
 
@@ -52,8 +75,25 @@ const Feed = () => {
     }, []);
 
     useEffect(() => {
-        fetchOpinions();
-    }, [activeTopic, sortBy]);
+        fetchOpinions(page);
+    }, [page, activeTopic, sortBy]);
+
+    // Scroll listener for infinite scroll
+    useEffect(() => {
+        const handleScroll = () => {
+            if (
+                window.innerHeight + document.documentElement.scrollTop + 100 >= document.documentElement.offsetHeight &&
+                hasMore &&
+                !loading &&
+                !isFetchingMore
+            ) {
+                setPage(prev => prev + 1);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [hasMore, loading, isFetchingMore]);
 
     const handlePostClick = () => {
         if (!user) {
@@ -168,12 +208,21 @@ const Feed = () => {
                         ))}
                     </div>
                 )}
+
+                {isFetchingMore && (
+                    <div className="text-center py-8">
+                        <div className="inline-block w-8 h-8 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+                    </div>
+                )}
             </div>
 
             {showModal && (
                 <CreateOpinionModal
                     onClose={() => setShowModal(false)}
-                    onCreated={fetchOpinions}
+                    onCreated={() => {
+                        setPage(1);
+                        fetchOpinions(1);
+                    }}
                 />
             )}
         </div>

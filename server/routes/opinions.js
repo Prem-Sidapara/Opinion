@@ -28,7 +28,7 @@ const getUserVote = (opinion, userId) => {
 
 // GET Options (Public Feed)
 router.get('/', async (req, res) => {
-    const { topic, sort, userId: filterUserId } = req.query;
+    const { topic, sort, userId: filterUserId, page = 1, limit = 20 } = req.query;
     const filter = {};
     if (topic) filter.topic = topic;
 
@@ -61,7 +61,8 @@ router.get('/', async (req, res) => {
     try {
         const opinions = await Opinion.find(filter)
             .sort(sortOption)
-            .limit(50)
+            .skip((page - 1) * limit)
+            .limit(parseInt(limit))
             .populate('userId', 'username')
             .populate('commentsCount');
 
