@@ -36,10 +36,6 @@
     border-radius: 0px !important;
   }
 
-  /* Universal Sharp Corners Override */
-  * {
-    border-radius: 0px !important;
-  }
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
