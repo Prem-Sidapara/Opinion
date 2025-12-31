@@ -57,6 +57,7 @@ router.post('/google', async (req, res) => {
             if (user.isSetupComplete !== false) user.isSetupComplete = false;
             await user.save();
             console.log(`[Google Login] New User Created: ${user.email} (isSetupComplete: ${user.isSetupComplete})`);
+        } else {
             console.log(`[Google Login] User FOUND: '${user.email}' (Username: ${user.username}, Setup Complete: ${user.isSetupComplete})`);
 
             // Auto-fix for stuck users (Created > 2 mins ago but still incomplete)
