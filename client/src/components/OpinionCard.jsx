@@ -173,9 +173,9 @@ const OpinionCard = ({ opinion, onDelete }) => {
                 <button
                     onClick={() => handleVote('helpful')}
                     disabled={loading}
-                    className={`flex items-center border border-gray-300 rounded gap-1.5 px-3 py-1.5 text-xs font-bold uppercase transition-all ${userVote === 'helpful'
-                        ? 'bg-green-500 text-white shadow-md'
-                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-black'
+                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase transition-all rounded-full shadow-sm border ${userVote === 'helpful'
+                        ? 'bg-emerald-600 text-white border-emerald-600'
+                        : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
                         }`}
                 >
                     <ThumbsUp size={12} />
@@ -185,9 +185,9 @@ const OpinionCard = ({ opinion, onDelete }) => {
                 <button
                     onClick={() => handleVote('notHelpful')}
                     disabled={loading}
-                    className={`flex items-center border border-gray-300 rounded gap-1.5 px-3 py-1.5 text-xs font-bold uppercase transition-all ${userVote === 'notHelpful'
-                        ? 'bg-red-500 text-white shadow-md'
-                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-black'
+                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase transition-all rounded-full shadow-sm border ${userVote === 'notHelpful'
+                        ? 'bg-rose-600 text-white border-rose-600'
+                        : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
                         }`}
                 >
                     <ThumbsDown size={12} />
@@ -196,7 +196,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
 
                 <button
                     onClick={toggleComments}
-                    className="px-3 py-1.5 text-xs font-bold uppercase bg-white border border-gray-300 hover:bg-gray-100 text-gray-600 flex items-center gap-1.5"
+                    className="px-3 py-1.5 text-xs font-bold uppercase bg-white border border-slate-200 rounded-full shadow-sm hover:bg-slate-50 text-slate-500 flex items-center gap-1.5 transition-all"
                     title="Comments"
                 >
                     <MessageSquare size={12} />
