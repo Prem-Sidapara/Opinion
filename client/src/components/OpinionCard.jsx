@@ -29,6 +29,16 @@ const OpinionCard = ({ opinion, onDelete }) => {
         const fonts = ['text-base md:text-lg', 'text-lg md:text-xl', 'text-sm md:text-base'];
         const fontWeights = ['font-medium', 'font-normal', 'font-semibold'];
 
+        // Random pastel colors (Tailwind classes)
+        const colors = [
+            'bg-red-50 border-red-100', 'bg-orange-50 border-orange-100', 'bg-amber-50 border-amber-100',
+            'bg-yellow-50 border-yellow-100', 'bg-lime-50 border-lime-100', 'bg-green-50 border-green-100',
+            'bg-emerald-50 border-emerald-100', 'bg-teal-50 border-teal-100', 'bg-cyan-50 border-cyan-100',
+            'bg-sky-50 border-sky-100', 'bg-blue-50 border-blue-100', 'bg-indigo-50 border-indigo-100',
+            'bg-violet-50 border-violet-100', 'bg-purple-50 border-purple-100', 'bg-fuchsia-50 border-fuchsia-100',
+            'bg-pink-50 border-pink-100', 'bg-rose-50 border-rose-100', 'bg-slate-50 border-slate-100'
+        ];
+
         // Determine layout based on content length + randomness
         const isLongText = opinion.content.length > 200;
 
@@ -36,6 +46,7 @@ const OpinionCard = ({ opinion, onDelete }) => {
             minHeight: isLongText ? 'min-h-[300px]' : heights[random(heights.length)],
             fontSize: fonts[random(fonts.length)],
             fontWeight: fontWeights[random(fontWeights.length)],
+            color: colors[random(colors.length)],
             // Randomly justify content to add more variance (start, or sometimes center for short bold texts)
             justify: !isLongText && random(10) > 7 ? 'justify-center text-center' : 'justify-between text-left'
         };
@@ -142,9 +153,9 @@ const OpinionCard = ({ opinion, onDelete }) => {
     return (
         <div
             ref={cardRef}
-            className={`glass-card p-6 mb-6 relative break-inside-avoid hover:scale-[1.01] transition-transform duration-300 ease-out border border-white/40 shadow-xl bg-white/70 backdrop-blur-md rounded-2xl flex flex-col ${randomTraits.justify} ${randomTraits.minHeight}`}
+            className={`p-6 mb-6 relative break-inside-avoid hover:scale-[1.01] hover:shadow-2xl transition-all duration-300 ease-out border shadow-lg rounded-2xl flex flex-col ${randomTraits.justify} ${randomTraits.minHeight} ${randomTraits.color}`}
         >
-            <div className={`flex justify-between items-start mb-4 border-b border-gray-100 pb-3 ${randomTraits.justify.includes('center') ? 'w-full' : ''}`}>
+            <div className={`flex justify-between items-start mb-4 border-b border-black/5 pb-3 ${randomTraits.justify.includes('center') ? 'w-full' : ''}`}>
                 <span className={`px-2 py-0.5 text-xs font-bold uppercase tracking-widest ${opinion.topic === 'lifestyle' ? 'bg-emerald-100 text-emerald-800' :
                     opinion.topic === 'tech' ? 'bg-indigo-100 text-indigo-800' :
                         opinion.topic === 'career' ? 'bg-amber-100 text-amber-800' :
