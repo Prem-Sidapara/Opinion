@@ -28,7 +28,7 @@ const Login = () => {
             } else {
                 console.log("Setup Complete - Redirecting");
                 console.log("Setup Complete - Redirecting");
-                // navigate('/'); // DISABLED FOR DEBUGGING
+                navigate('/'); // DISABLED FOR DEBUGGING
                 alert("DEBUG: User IS considered setup complete. Redirect disabled.");
             }
         }
