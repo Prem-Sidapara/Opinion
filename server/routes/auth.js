@@ -61,7 +61,8 @@ router.post('/google', async (req, res) => {
         } else {
             console.log(`[Google Login] User FOUND: '${user.email}' (Username: ${user.username}, Setup Complete: ${user.isSetupComplete})`);
 
-            // Auto-fix for stuck users (Created > 2 mins ago but still incomplete)
+            // Auto-fix for stuck users (Created > 2 mins ago but still incomplete) - DISABLED (Causing issues with new users)
+            /*
             // Handle missing createdAt by treating as old (0)
             const createdTime = user.createdAt ? new Date(user.createdAt).getTime() : 0;
             const TWO_MINUTES = 2 * 60 * 1000;
@@ -75,6 +76,7 @@ router.post('/google', async (req, res) => {
                 user.isSetupComplete = true;
                 await user.save();
             }
+            */
         }
 
         const jwtToken = jwt.sign({ userId: user._id, email: user.email, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
