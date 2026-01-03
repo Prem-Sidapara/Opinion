@@ -4,7 +4,7 @@ import api from '../api';
 
 
 
-const CreateOpinionModal = ({ onClose, onCreated }) => {
+const CreateOpinionModal = ({ onClose, onCreated, initialTopic }) => {
     const [content, setContent] = useState('');
     const [topic, setTopic] = useState('');
     const [availableTopics, setAvailableTopics] = useState([]);
@@ -35,17 +35,28 @@ const CreateOpinionModal = ({ onClose, onCreated }) => {
                 });
 
                 setAvailableTopics(combinedTopics);
-                if (combinedTopics.length > 0) setTopic(combinedTopics[0].name);
+
+                // Priority: initialTopic > first available topic > nothing
+                if (initialTopic && initialTopic !== 'all') {
+                    setTopic(initialTopic);
+                } else if (combinedTopics.length > 0) {
+                    setTopic(combinedTopics[0].name);
+                }
             } catch (err) {
                 console.error('Failed to fetch topics', err);
                 // Fallback if API fails completely
                 const defaultTopics = ['lifestyle', 'tech', 'career', 'relationships', 'politics'];
                 setAvailableTopics(defaultTopics.map(name => ({ _id: name, name })));
-                setTopic('lifestyle');
+                
+                 if (initialTopic && initialTopic !== 'all') {
+                    setTopic(initialTopic);
+                } else {
+                    setTopic('lifestyle');
+                }
             }
         };
         fetchTopics();
-    }, []);
+    }, [initialTopic]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

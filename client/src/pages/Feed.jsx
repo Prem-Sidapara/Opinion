@@ -276,9 +276,11 @@ const Feed = () => {
             {showModal && (
                 <CreateOpinionModal
                     onClose={() => setShowModal(false)}
+                    initialTopic={activeTopic}
                     onCreated={() => {
                         setPage(1);
                         fetchOpinions(1);
+                        fetchTopics(); // Refresh topics to include any new ones
                     }}
                 />
             )}
