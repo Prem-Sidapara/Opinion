@@ -5,6 +5,8 @@ const Comment = require('../models/Comment');
 const Topic = require('../models/Topic');
 const jwt = require('jsonwebtoken');
 
+
+
 // Middleware to verify token
 const verifyToken = (req, res, next) => {
     const token = req.headers['authorization'];
